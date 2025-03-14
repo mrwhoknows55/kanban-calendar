@@ -1,24 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Calendar Mobile View
+
+A mobile-friendly calendar application built with Next.js, TypeScript, Tailwind CSS, and Zustand.
+
+## Features
+
+- Week view calendar strip for easy date navigation
+- Daily schedule view showing events for the selected day
+- Event cards with detailed information
+- "Zoom to open" transition for event details
+- Responsive design optimized for mobile devices
+
+## Components
+
+### UI Components
+
+- **Button**: Reusable button component with various styles and sizes
+- **Card**: Card component for displaying content in a contained format
+- **Dialog**: Modal dialog for displaying detailed event information
+
+### Calendar Components
+
+- **Calendar**: Main component that combines WeekView and DailySchedule
+- **WeekView**: Displays a week strip for date selection
+- **DailySchedule**: Shows events for the selected day
+- **EventCard**: Card component for individual events with zoom-to-open functionality
+
+## State Management
+
+The application uses Zustand for state management, with the following features:
+
+- Store selected date
+- Manage calendar events
+- Filter events by date
 
 ## Getting Started
 
-First, run the development server:
+1. Install dependencies:
+   ```bash
+   pnpm install
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2. Run the development server:
+   ```bash
+   pnpm dev
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Image Placeholders
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The application uses placeholder images for events. Replace the following files with actual images:
+
+- `/public/images/coffee.jpg`
+- `/public/images/buildings.jpg`
+- `/public/images/bridge.jpg`
+
+## Technologies Used
+
+- Next.js 15
+- TypeScript
+- Tailwind CSS 4
+- Zustand for state management
+- Radix UI for accessible components
+- date-fns for date manipulation
 
 ## Learn More
 
