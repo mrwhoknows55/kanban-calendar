@@ -140,12 +140,12 @@ export function MobileKanbanCalendar({ initialDate, events }: MobileKanbanCalend
             <motion.button
               key={format(date, "yyyy-MM-dd")}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 rounded-full w-12 h-16 p-3 relative transition-all duration-300",
+                "flex flex-col items-center justify-center gap-1 rounded-md w-12 h-16 p-3 relative transition-all duration-300",
                 format(date, "yyyy-MM-dd") === currentDateKey
                   ? "bg-gradient-active text-white scale-110"
-                  : "text-white",
+                  : "bg-white/5 text-white",
                 isToday(date) && format(date, "yyyy-MM-dd") !== currentDateKey
-                  ? "ring-2 ring-white/30"
+                  ? "ring-1 ring-white/30"
                   : ""
               )}
               onClick={() => {
@@ -167,66 +167,89 @@ export function MobileKanbanCalendar({ initialDate, events }: MobileKanbanCalend
       </div>
       
       {/* Daily events with swipe animation */}
-      <div className="flex-1 bg-white overflow-hidden">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={currentDateKey}
-            className="h-full overflow-y-auto"
-            initial={{ 
-              x: direction < 0 ? 300 : -300,
-              opacity: 0 
-            }}
-            animate={{ 
-              x: 0,
-              opacity: 1 
-            }}
-            exit={{ 
-              x: direction < 0 ? -300 : 300,
-              opacity: 0 
-            }}
-            transition={{
-              type: "spring",
-              stiffness: 300,
-              damping: 30
-            }}
-          >
-            <div className="p-6">
-              {/* Updated date display with fading line on the right */}
-              <div className="mb-8 flex items-center">
-                <h2 className="text-2xl font-semibold text-gray-800 mr-4">
-                  {format(currentDate, "EEE MMM d yyyy")}
-                </h2>
-                <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
+      <div className="flex-1 bg-white overflow-hidden flex flex-col">
+        {/* Static date display with fading line on the right */}
+        <div className="p-6 pb-0">
+          <div className="mb-6 flex items-center">
+            <h2 className="text-2xl font-semibold text-gray-800 mr-4">
+              {format(currentDate, "EEE MMM d yyyy")}
+            </h2>
+            <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
+          </div>
+        </div>
+        
+        {/* Animated content area */}
+        <div className="flex-1 relative overflow-hidden">
+          <AnimatePresence mode="sync" initial={false}>
+            <motion.div
+              key={currentDateKey}
+              className="absolute inset-0 overflow-y-auto"
+              initial={{ 
+                x: direction < 0 ? 200 : -200,
+                opacity: 0.5
+              }}
+              animate={{ 
+                x: 0,
+                opacity: 1 
+              }}
+              exit={{ 
+                x: direction < 0 ? -200 : 200,
+                opacity: 0,
+                zIndex: 0
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 500,
+                damping: 30,
+                mass: 0.5,
+                velocity: 4
+              }}
+            >
+              <div className="p-6 pt-0">
+                {currentEvents.length === 0 ? (
+                  <motion.div 
+                    className="text-center py-10 text-gray-500"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2, delay: 0.05 }}
+                  >
+                    <p className="text-lg">No events scheduled for today</p>
+                    <p className="text-sm mt-3">Drag events from other days to add them here</p>
+                  </motion.div>
+                ) : (
+                  <div className="space-y-5">
+                    {currentEvents.map((event, index) => (
+                      <motion.div
+                        key={event.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ 
+                          duration: 0.2, 
+                          delay: 0.05 + (index * 0.03),
+                          ease: "easeOut"
+                        }}
+                      >
+                        <DraggableEventCard
+                          event={event}
+                          onDragEnd={handleEventDragEnd}
+                          isOpen={isEventOpen && selectedEvent?.id === event.id}
+                          onOpenChange={(open) => {
+                            setIsEventOpen(open);
+                            if (open) {
+                              setSelectedEvent(event);
+                            } else {
+                              setSelectedEvent(null);
+                            }
+                          }}
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
               </div>
-              
-              {currentEvents.length === 0 ? (
-                <div className="text-center py-10 text-gray-500">
-                  <p className="text-lg">No events scheduled for today</p>
-                  <p className="text-sm mt-3">Drag events from other days to add them here</p>
-                </div>
-              ) : (
-                <div className="space-y-5">
-                  {currentEvents.map((event) => (
-                    <DraggableEventCard
-                      key={event.id}
-                      event={event}
-                      onDragEnd={handleEventDragEnd}
-                      isOpen={isEventOpen && selectedEvent?.id === event.id}
-                      onOpenChange={(open) => {
-                        setIsEventOpen(open);
-                        if (open) {
-                          setSelectedEvent(event);
-                        } else {
-                          setSelectedEvent(null);
-                        }
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          </motion.div>
-        </AnimatePresence>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

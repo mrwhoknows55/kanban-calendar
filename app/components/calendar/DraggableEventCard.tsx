@@ -6,16 +6,19 @@ import { type Event } from "@/app/lib/calendar-data";
 import { Card } from "@/app/components/ui/card";
 import {
   Dialog,
-  DialogContent,
+  DialogContent as BaseDialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
   DialogClose,
+  DialogPortal,
+  DialogOverlay,
 } from "@/app/components/ui/dialog";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
 import { X, Clock, Calendar, ArrowLeft } from "lucide-react";
 import { Root as VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { cn } from "@/app/lib/utils";
 
 interface DraggableEventCardProps {
   event: Event;
@@ -23,6 +26,31 @@ interface DraggableEventCardProps {
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
+
+// Custom DialogContent with styled default close button
+const DialogContent = React.forwardRef<
+  React.ElementRef<typeof BaseDialogContent>,
+  React.ComponentPropsWithoutRef<typeof BaseDialogContent>
+>(({ className, children, ...props }, ref) => (
+  <DialogPortal>
+    <DialogOverlay />
+    <BaseDialogContent
+      ref={ref}
+      className={cn(
+        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+      <DialogClose className="absolute right-5 top-5 z-30 rounded-full bg-black/20 p-2 text-white hover:bg-black/30 transition-colors duration-200 focus:outline-none">
+        <X className="h-5 w-5" />
+        <span className="sr-only">Close</span>
+      </DialogClose>
+    </BaseDialogContent>
+  </DialogPortal>
+));
+DialogContent.displayName = "DialogContent";
 
 export function DraggableEventCard({ 
   event, 
@@ -62,19 +90,21 @@ export function DraggableEventCard({
   // Shared animation settings
   const sharedTransition = {
     type: "spring",
-    damping: 30,
-    stiffness: 300,
-    mass: 0.8
+    damping: 25,
+    stiffness: 400,
+    mass: 0.6,
+    velocity: 2
   };
 
   // Enhanced transition for image container
   const imageTransition = {
     type: "spring",
-    damping: 25,
-    stiffness: 250,
-    mass: 0.7,
+    damping: 22,
+    stiffness: 350,
+    mass: 0.6,
     restDelta: 0.001,
-    restSpeed: 0.001
+    restSpeed: 0.001,
+    velocity: 2
   };
 
   // Content animation variants
@@ -87,15 +117,15 @@ export function DraggableEventCard({
       y: 0, 
       opacity: 1,
       transition: { 
-        delay: 0.2, 
-        duration: 0.3 
+        delay: 0.1, 
+        duration: 0.2 
       }
     },
     exit: { 
       y: 20, 
       opacity: 0,
       transition: { 
-        duration: 0.2 
+        duration: 0.15 
       }
     }
   };
@@ -108,14 +138,14 @@ export function DraggableEventCard({
     visible: { 
       opacity: 1,
       transition: { 
-        delay: 0.3, 
-        duration: 0.3 
+        delay: 0.15, 
+        duration: 0.2 
       }
     },
     exit: { 
       opacity: 0,
       transition: { 
-        duration: 0.15 
+        duration: 0.1 
       }
     }
   };
@@ -128,14 +158,14 @@ export function DraggableEventCard({
     visible: { 
       opacity: 1,
       transition: { 
-        duration: 0.2 
+        duration: 0.15 
       }
     },
     exit: { 
       opacity: 0,
       transition: { 
-        duration: 0.2,
-        delay: 0.1 // Slight delay to allow child animations to start first
+        duration: 0.15,
+        delay: 0.05 // Slight delay to allow child animations to start first
       }
     }
   };
@@ -218,12 +248,6 @@ export function DraggableEventCard({
               exit="exit"
               className="flex flex-col h-full bg-white"
             >
-              {/* Close button (top right) */}
-              <DialogClose className="absolute right-5 top-5 z-30 rounded-full bg-black/20 p-2 text-white hover:bg-black/30 transition-colors duration-200 focus:outline-none">
-                <X className="h-5 w-5" />
-                <span className="sr-only">Close</span>
-              </DialogClose>
-              
               {/* Cover image section */}
               <motion.div 
                 className="relative w-full h-[40vh] sm:h-[280px] overflow-hidden"
