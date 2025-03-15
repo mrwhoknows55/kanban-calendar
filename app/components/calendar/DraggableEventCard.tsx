@@ -67,6 +67,79 @@ export function DraggableEventCard({
     mass: 0.8
   };
 
+  // Enhanced transition for image container
+  const imageTransition = {
+    type: "spring",
+    damping: 25,
+    stiffness: 250,
+    mass: 0.7,
+    restDelta: 0.001,
+    restSpeed: 0.001
+  };
+
+  // Content animation variants
+  const contentVariants = {
+    hidden: { 
+      y: 20, 
+      opacity: 0 
+    },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { 
+        delay: 0.2, 
+        duration: 0.3 
+      }
+    },
+    exit: { 
+      y: 20, 
+      opacity: 0,
+      transition: { 
+        duration: 0.2 
+      }
+    }
+  };
+
+  // Details animation variants
+  const detailsVariants = {
+    hidden: { 
+      opacity: 0 
+    },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        delay: 0.3, 
+        duration: 0.3 
+      }
+    },
+    exit: { 
+      opacity: 0,
+      transition: { 
+        duration: 0.15 
+      }
+    }
+  };
+
+  // Dialog animation variants
+  const dialogVariants = {
+    hidden: { 
+      opacity: 0 
+    },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        duration: 0.2 
+      }
+    },
+    exit: { 
+      opacity: 0,
+      transition: { 
+        duration: 0.2,
+        delay: 0.1 // Slight delay to allow child animations to start first
+      }
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
@@ -88,7 +161,7 @@ export function DraggableEventCard({
             <motion.div 
               className="relative w-full h-[160px] overflow-hidden rounded-t-xl"
               layoutId={`image-container-${event.id}`}
-              transition={sharedTransition}
+              transition={imageTransition}
             >
               <Image
                 src={imageError ? fallbackImage : event.imageUrl}
@@ -131,7 +204,7 @@ export function DraggableEventCard({
         </motion.div>
       </DialogTrigger>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isOpen && (
           <DialogContent className="p-0 overflow-hidden max-w-none w-full h-full sm:h-auto sm:max-w-[500px] sm:rounded-lg border-none">
             <VisuallyHidden>
@@ -139,10 +212,10 @@ export function DraggableEventCard({
               <DialogDescription>{event.description}</DialogDescription>
             </VisuallyHidden>
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              variants={dialogVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
               className="flex flex-col h-full bg-white"
             >
               {/* Close button (top right) */}
@@ -155,7 +228,7 @@ export function DraggableEventCard({
               <motion.div 
                 className="relative w-full h-[40vh] sm:h-[280px] overflow-hidden"
                 layoutId={`image-container-${event.id}`}
-                transition={sharedTransition}
+                transition={imageTransition}
               >
                 <Image
                   src={imageError ? fallbackImage : event.imageUrl}
@@ -199,9 +272,10 @@ export function DraggableEventCard({
               <div className="flex-1 overflow-y-auto bg-gradient-background">
                 <motion.div 
                   className="p-8"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2, duration: 0.3 }}
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
                 >
                   <div className="mb-8">
                     <h3 className="text-xl font-semibold text-gray-800 mb-4">Description</h3>
@@ -216,9 +290,10 @@ export function DraggableEventCard({
                   
                   <motion.div 
                     className="border-t border-gray-200 pt-6"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3, duration: 0.3 }}
+                    variants={detailsVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
                   >
                     <h3 className="text-sm font-medium text-gray-500 mb-4">Event Details</h3>
                     
