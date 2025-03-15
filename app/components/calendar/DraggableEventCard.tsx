@@ -23,6 +23,7 @@ import { cn } from "@/app/lib/utils";
 interface DraggableEventCardProps {
   event: Event;
   onDragEnd?: (event: Event, offset: number) => void;
+  onDragStart?: () => void;
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -55,11 +56,13 @@ DialogContent.displayName = "DialogContent";
 export function DraggableEventCard({ 
   event, 
   onDragEnd,
+  onDragStart,
   isOpen = false,
   onOpenChange
 }: DraggableEventCardProps) {
   const [imageError, setImageError] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [wasDragged, setWasDragged] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   
   const fallbackImage =
@@ -67,24 +70,66 @@ export function DraggableEventCard({
 
   // Motion values for drag
   const x = useMotionValue(0);
-  const dragThreshold = 100; // Threshold to trigger day change
+  const dragThreshold = 50; // Lower threshold to make dragging more responsive
   
-  // Transform x motion value to card rotation
+  // Transform x motion value to card rotation and scale
   const rotate = useTransform(x, [-200, 0, 200], [-5, 0, 5]);
+  const scale = useTransform(
+    x, 
+    [-200, -100, 0, 100, 200], 
+    [0.95, 0.97, 1, 0.97, 0.95]
+  );
+  
+  // Handle drag start
+  const handleDragStart = () => {
+    setIsDragging(true);
+    setWasDragged(false);
+    
+    // Add dragging class to body for global cursor changes
+    document.body.classList.add('dragging');
+    
+    // Call the onDragStart callback if provided
+    if (onDragStart) {
+      onDragStart();
+    }
+  };
   
   // Handle drag end
   const handleDragEnd = () => {
-    setIsDragging(false);
     const xOffset = x.get();
     
-    if (Math.abs(xOffset) > dragThreshold && onDragEnd) {
-      // Determine direction (negative = right, positive = left)
+    // Only consider it a drag if it moved more than a minimal amount
+    if (Math.abs(xOffset) > 10) {
+      setWasDragged(true);
+    }
+    
+    setIsDragging(false);
+    
+    // Remove dragging class from body
+    document.body.classList.remove('dragging');
+    
+    // Call the onDragEnd callback regardless of threshold
+    // Let the parent component decide what to do
+    if (onDragEnd) {
       const direction = xOffset > 0 ? 1 : -1;
       onDragEnd(event, direction);
     }
     
     // Reset position
     x.set(0);
+    
+    // Reset wasDragged after a short delay to allow click handlers to check it
+    setTimeout(() => {
+      setWasDragged(false);
+    }, 300);
+  };
+
+  // Handle card click
+  const handleCardClick = () => {
+    // Only open the dialog if we weren't dragging
+    if (!isDragging && !wasDragged && onOpenChange) {
+      onOpenChange(true);
+    }
   };
 
   // Shared animation settings
@@ -177,59 +222,62 @@ export function DraggableEventCard({
           ref={cardRef}
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
-          style={{ x, rotate }}
-          onDragStart={() => setIsDragging(true)}
+          dragElastic={0.1} // Reduce elasticity to keep card more rigid
+          dragTransition={{ 
+            bounceStiffness: 600, 
+            bounceDamping: 30 
+          }}
+          style={{ x, rotate, scale }}
+          onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           whileTap={{ scale: 0.98 }}
-          layoutId={`card-${event.id}`}
+          whileDrag={{ 
+            zIndex: 50,
+            boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
+            cursor: "grabbing",
+            opacity: 0.7
+          }}
           transition={sharedTransition}
+          className="touch-none select-none relative"
         >
+          {/* Drag handle indicator */}
+          <div className="drag-handle animate-slide-hint"></div>
+          
           <Card 
-            className="mb-5 cursor-pointer hover:shadow-md transition-all overflow-hidden rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.1)]"
-            onClick={() => !isDragging && onOpenChange && onOpenChange(true)}
+            className="mb-5 cursor-grab active:cursor-grabbing hover:shadow-md transition-all overflow-hidden rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.1)]"
+            onClick={handleCardClick}
           >
-            <motion.div 
-              className="relative w-full h-[160px] overflow-hidden rounded-t-xl"
-              layoutId={`image-container-${event.id}`}
-              transition={imageTransition}
-            >
+            <div className="relative w-full h-[160px] overflow-hidden rounded-t-xl">
               <Image
                 src={imageError ? fallbackImage : event.imageUrl}
                 alt={event.title}
                 fill
-                className="object-cover"
+                className="object-cover pointer-events-none"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 priority
                 onError={() => setImageError(true)}
+                draggable={false}
               />
-              <motion.div 
+              <div 
                 className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10"
-                layoutId={`time-badge-${event.id}`}
-                transition={sharedTransition}
               >
                 {event.time}
-              </motion.div>
-            </motion.div>
-            <motion.div 
+              </div>
+            </div>
+            <div 
               className="p-5 flex flex-col"
-              layoutId={`content-${event.id}`}
-              transition={sharedTransition}
             >
-              <motion.h3 
+              <h3 
                 className="text-lg font-semibold text-[#222222] mb-2"
-                layoutId={`title-${event.id}`}
-                transition={sharedTransition}
               >
                 {event.title}
-              </motion.h3>
-              <motion.p 
+              </h3>
+              <p 
                 className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2"
-                layoutId={`description-${event.id}`}
-                transition={sharedTransition}
               >
                 {event.description}
-              </motion.p>
-            </motion.div>
+              </p>
+            </div>
           </Card>
         </motion.div>
       </DialogTrigger>
@@ -249,10 +297,8 @@ export function DraggableEventCard({
               className="flex flex-col h-full bg-white"
             >
               {/* Cover image section */}
-              <motion.div 
+              <div 
                 className="relative w-full h-[40vh] sm:h-[280px] overflow-hidden"
-                layoutId={`image-container-${event.id}`}
-                transition={imageTransition}
               >
                 <Image
                   src={imageError ? fallbackImage : event.imageUrl}
@@ -268,21 +314,17 @@ export function DraggableEventCard({
                 {/* Header content overlay */}
                 <div className="absolute bottom-0 left-0 p-8 text-white w-full">
                   <div className="flex items-center justify-between mb-2">
-                    <motion.h2 
+                    <h2 
                       className="text-2xl font-bold"
-                      layoutId={`title-${event.id}`}
-                      transition={sharedTransition}
                     >
                       {event.title}
-                    </motion.h2>
+                    </h2>
                     
-                    <motion.div 
+                    <div 
                       className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-white"
-                      layoutId={`time-badge-${event.id}`}
-                      transition={sharedTransition}
                     >
                       {event.time}
-                    </motion.div>
+                    </div>
                   </div>
                   
                   <div className="flex items-center">
@@ -290,7 +332,7 @@ export function DraggableEventCard({
                     <span className="text-sm text-white/90">Today</span>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Content section */}
               <div className="flex-1 overflow-y-auto bg-gradient-background">
@@ -303,13 +345,11 @@ export function DraggableEventCard({
                 >
                   <div className="mb-8">
                     <h3 className="text-xl font-semibold text-gray-800 mb-4">Description</h3>
-                    <motion.p 
+                    <p 
                       className="text-gray-600 leading-relaxed text-base"
-                      layoutId={`description-${event.id}`}
-                      transition={sharedTransition}
                     >
                       {event.description}
-                    </motion.p>
+                    </p>
                   </div>
                   
                   <motion.div 

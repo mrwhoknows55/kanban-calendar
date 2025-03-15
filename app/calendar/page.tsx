@@ -1,5 +1,7 @@
-import { ResponsiveCalendar } from "@/app/components/calendar/ResponsiveCalendar";
-import { getSelectedDate } from "@/app/lib/calendar-actions";
+import React from "react";
+import { ResponsiveKanbanCalendar } from "@/app/components/calendar/ResponsiveKanbanCalendar";
+import { getEventDates, getEventsForDate } from "@/app/lib/calendar-data";
+import { format } from "date-fns";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -7,13 +9,31 @@ export const metadata: Metadata = {
   description: "View and manage your daily schedule",
 };
 
+export const dynamic = "force-dynamic";
+
+async function getEvents() {
+  // Get all event dates
+  const eventDates = await getEventDates();
+  
+  // Create a record of events by date
+  const events: Record<string, any> = {};
+  
+  // Populate events for each date
+  for (const date of eventDates) {
+    const formattedDate = date; // Already in yyyy-MM-dd format
+    events[formattedDate] = await getEventsForDate(new Date(formattedDate));
+  }
+  
+  return events;
+}
+
 export default async function CalendarPage() {
-  // Get the selected date from cookies
-  const selectedDate = await getSelectedDate();
+  const events = await getEvents();
+  const today = new Date();
   
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-background">
-      <ResponsiveCalendar initialDate={selectedDate} />
+    <main className="min-h-screen">
+      <ResponsiveKanbanCalendar initialDate={today} events={events} />
     </main>
   );
 }

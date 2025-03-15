@@ -7,14 +7,15 @@ import { DraggableEventCard } from "./DraggableEventCard";
 import { type Event } from "@/app/lib/calendar-data";
 import { cn, formatDate } from "@/app/lib/utils";
 import { useSwipe } from "@/app/lib/gesture-utils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, MoveHorizontal, ArrowRight } from "lucide-react";
+import { useCalendarEvents } from "@/app/lib/calendar-hooks";
 
 interface MobileKanbanCalendarProps {
   initialDate: Date;
   events: Record<string, Event[]>;
 }
 
-export function MobileKanbanCalendar({ initialDate, events }: MobileKanbanCalendarProps) {
+export function MobileKanbanCalendar({ initialDate, events: initialEvents }: MobileKanbanCalendarProps) {
   // Always use today as the initial date
   const today = new Date();
   
@@ -25,6 +26,12 @@ export function MobileKanbanCalendar({ initialDate, events }: MobileKanbanCalend
   const [direction, setDirection] = useState<number>(0);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isEventOpen, setIsEventOpen] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [dragDirection, setDragDirection] = useState<number | null>(null);
+  const [draggedEvent, setDraggedEvent] = useState<Event | null>(null);
+  
+  // Use our custom hook for managing events
+  const { events, moveEvent } = useCalendarEvents({ initialEvents });
   
   // Format the current date as a string key for the events object
   const currentDateKey = format(currentDate, "yyyy-MM-dd");
@@ -65,35 +72,50 @@ export function MobileKanbanCalendar({ initialDate, events }: MobileKanbanCalend
   
   // Set up swipe handlers
   useSwipe({
-    onSwipeLeft: () => handleSwipe(-1),
-    onSwipeRight: () => handleSwipe(1),
+    onSwipeLeft: () => !isDragging && handleSwipe(-1),
+    onSwipeRight: () => !isDragging && handleSwipe(1),
   }, {
     threshold: 50,
     preventDefault: false,
   });
   
+  // Handle event drag start
+  const handleEventDragStart = (event: Event) => {
+    setIsDragging(true);
+    setDraggedEvent(event);
+  };
+  
   // Handle event drag end
   const handleEventDragEnd = (event: Event, direction: number) => {
-    // Calculate the new date based on the drag direction
-    const newDate = direction > 0 
-      ? subDays(currentDate, 1) 
-      : addDays(currentDate, 1);
-    
-    // Format the new date as a string key
-    const newDateKey = format(newDate, "yyyy-MM-dd");
-    
-    // Here you would typically update your state or database
-    // For this demo, we're just logging the action
-    console.log(`Moved event ${event.id} to ${newDateKey}`);
-    
-    // Change the current date to follow the event
-    setDirection(direction);
-    setCurrentDate(newDate);
-    
-    // Check if we need to update the week
-    if (!isSameWeek(newDate, currentWeekStart, { weekStartsOn: 1 })) {
-      setCurrentWeekStart(startOfWeek(newDate, { weekStartsOn: 1 }));
+    // Only process if we have a valid direction
+    if (direction !== 0) {
+      setDragDirection(direction);
+      
+      // Calculate the new date based on the drag direction
+      const newDate = direction > 0 
+        ? subDays(currentDate, 1) 
+        : addDays(currentDate, 1);
+      
+      // Format the new date as a string key
+      const newDateKey = format(newDate, "yyyy-MM-dd");
+      
+      // Use the moveEvent function from our custom hook
+      moveEvent(event.id, currentDateKey, newDateKey);
+      
+      // Change the current date to follow the event
+      setDirection(direction);
+      setCurrentDate(newDate);
+      
+      // Check if we need to update the week
+      if (!isSameWeek(newDate, currentWeekStart, { weekStartsOn: 1 })) {
+        setCurrentWeekStart(startOfWeek(newDate, { weekStartsOn: 1 }));
+      }
     }
+    
+    // Reset drag state
+    setDragDirection(null);
+    setIsDragging(false);
+    setDraggedEvent(null);
   };
   
   // Generate dates for the week view based on currentWeekStart
@@ -106,6 +128,12 @@ export function MobileKanbanCalendar({ initialDate, events }: MobileKanbanCalend
   };
   
   const weekDates = generateWeekDates();
+  
+  // Get previous and next dates for drag indicators
+  const prevDate = subDays(currentDate, 1);
+  const nextDate = addDays(currentDate, 1);
+  const prevDateKey = format(prevDate, "yyyy-MM-dd");
+  const nextDateKey = format(nextDate, "yyyy-MM-dd");
   
   return (
     <div className="flex flex-col w-full h-screen overflow-hidden">
@@ -180,6 +208,73 @@ export function MobileKanbanCalendar({ initialDate, events }: MobileKanbanCalend
         
         {/* Animated content area */}
         <div className="flex-1 relative overflow-hidden">
+          {/* Drag indicators */}
+          {isDragging && (
+            <>
+              <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-center bg-black/5">
+                <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
+                  <MoveHorizontal className="w-5 h-5 text-blue-500" />
+                  <span className="text-sm font-medium text-gray-700">Drag to change day</span>
+                </div>
+              </div>
+              
+              {/* Left day indicator */}
+              <div 
+                className={cn(
+                  "absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-blue-100/30 to-transparent pointer-events-none z-5 flex items-center justify-start pl-4 transition-opacity duration-300",
+                  dragDirection === 1 ? "opacity-100" : "opacity-0"
+                )}
+              >
+                <div className="bg-white/80 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm text-xs font-medium text-gray-700">
+                  {format(prevDate, "MMM d")}
+                </div>
+              </div>
+              
+              {/* Right day indicator */}
+              <div 
+                className={cn(
+                  "absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-blue-100/30 to-transparent pointer-events-none z-5 flex items-center justify-end pr-4 transition-opacity duration-300",
+                  dragDirection === -1 ? "opacity-100" : "opacity-0"
+                )}
+              >
+                <div className="bg-white/80 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm text-xs font-medium text-gray-700">
+                  {format(nextDate, "MMM d")}
+                </div>
+              </div>
+              
+              {/* Enhanced drop indicators */}
+              {dragDirection !== null && (
+                <>
+                  {/* Left drop indicator */}
+                  <div 
+                    className={cn(
+                      "absolute left-8 top-1/2 transform -translate-y-1/2 pointer-events-none z-20 transition-opacity duration-300",
+                      dragDirection === 1 ? "opacity-100" : "opacity-0"
+                    )}
+                  >
+                    <div className="bg-blue-500 text-white px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5 animate-drop-pulse">
+                      <ArrowRight className="w-4 h-4 transform rotate-180" />
+                      <span className="text-sm font-medium">Drop</span>
+                    </div>
+                  </div>
+                  
+                  {/* Right drop indicator */}
+                  <div 
+                    className={cn(
+                      "absolute right-8 top-1/2 transform -translate-y-1/2 pointer-events-none z-20 transition-opacity duration-300",
+                      dragDirection === -1 ? "opacity-100" : "opacity-0"
+                    )}
+                  >
+                    <div className="bg-blue-500 text-white px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5 animate-drop-pulse">
+                      <ArrowRight className="w-4 h-4" />
+                      <span className="text-sm font-medium">Drop</span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </>
+          )}
+          
           <AnimatePresence mode="sync" initial={false}>
             <motion.div
               key={currentDateKey}
@@ -231,6 +326,7 @@ export function MobileKanbanCalendar({ initialDate, events }: MobileKanbanCalend
                       >
                         <DraggableEventCard
                           event={event}
+                          onDragStart={() => handleEventDragStart(event)}
                           onDragEnd={handleEventDragEnd}
                           isOpen={isEventOpen && selectedEvent?.id === event.id}
                           onOpenChange={(open) => {
