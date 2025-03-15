@@ -4,9 +4,13 @@ import { DailySchedule } from "@/app/components/calendar/DailySchedule";
 import { getSelectedDate } from "@/app/lib/calendar-actions";
 import { Suspense } from "react";
 
-export async function Calendar() {
-  // Get the selected date from cookies
-  const selectedDate = await getSelectedDate();
+interface CalendarProps {
+  initialDate?: Date;
+}
+
+export async function Calendar({ initialDate }: CalendarProps) {
+  // Get the selected date from cookies if initialDate is not provided
+  const selectedDate = initialDate || await getSelectedDate();
 
   return (
     <div className="flex flex-col w-full h-screen shadow-lg overflow-hidden sm:max-w-md sm:rounded-lg">

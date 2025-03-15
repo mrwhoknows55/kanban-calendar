@@ -33,6 +33,11 @@
   --background-gradient: linear-gradient(135deg, #f6f8ff 0%, #eef1f9 100%);
   --header-gradient: linear-gradient(to right, #3b82f6, #8b5cf6);
   --active-gradient: linear-gradient(135deg, #4f46e5, #7c3aed);
+  
+  /* Animation durations */
+  --transition-fast: 150ms;
+  --transition-medium: 300ms;
+  --transition-slow: 500ms;
 }
 
 @theme inline {
@@ -91,6 +96,16 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Smooth scrolling for the entire page */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Default transitions for interactive elements */
+  button, a, input, select, textarea {
+    @apply transition-all duration-300 ease-in-out;
+  }
 }
 
 @layer utilities {
@@ -99,6 +114,9 @@ body {
   }
   .animation-delay-400 {
     animation-delay: 0.4s;
+  }
+  .animation-delay-600 {
+    animation-delay: 0.6s;
   }
 
   .bg-gradient-background {
@@ -111,5 +129,79 @@ body {
 
   .bg-gradient-active {
     background: var(--active-gradient);
+  }
+  
+  /* Enhanced transitions */
+  .transition-fast {
+    transition-duration: var(--transition-fast);
+  }
+  
+  .transition-medium {
+    transition-duration: var(--transition-medium);
+  }
+  
+  .transition-slow {
+    transition-duration: var(--transition-slow);
+  }
+  
+  .transition-spring {
+    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  
+  .transition-bounce {
+    transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+  
+  /* Hover and focus effects */
+  .hover-lift {
+    @apply transition-transform duration-300;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+  }
+  
+  .hover-scale {
+    @apply transition-transform duration-300;
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Card animations */
+  .card-enter {
+    animation: card-enter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  
+  @keyframes card-enter {
+    0% {
+      opacity: 0;
+      transform: scale(0.9) translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  
+  /* Pulse animation for indicators */
+  .pulse {
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
+    }
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+    }
+    100% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+    }
   }
 }

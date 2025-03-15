@@ -10,9 +10,10 @@ import { hasEventsForDate } from "@/app/lib/calendar-data";
 
 interface WeekViewProps {
   selectedDate: Date;
+  onDateSelect?: (date: Date) => void; // Optional callback for client-side usage
 }
 
-export function WeekView({ selectedDate }: WeekViewProps) {
+export function WeekView({ selectedDate, onDateSelect }: WeekViewProps) {
   const router = useRouter();
   const [isUpdating, setIsUpdating] = React.useState(false);
   const [localSelectedDate, setLocalSelectedDate] =
@@ -61,6 +62,14 @@ export function WeekView({ selectedDate }: WeekViewProps) {
     setLocalSelectedDate(date);
 
     try {
+      // If onDateSelect is provided, use it (client-side)
+      if (onDateSelect) {
+        onDateSelect(date);
+        setIsUpdating(false);
+        return;
+      }
+      
+      // Otherwise, use the server action (server-side)
       await setSelectedDate(date);
       // Refresh the page to get the updated data
       router.refresh();
@@ -79,13 +88,13 @@ export function WeekView({ selectedDate }: WeekViewProps) {
   };
 
   return (
-    <div className="flex justify-between w-full px-2 py-3">
+    <div className="flex justify-between w-full px-2">
       {weekDays.map((date, index) => (
         <Button
           key={index}
           variant="ghost"
           className={cn(
-            "flex flex-col items-center p-1 rounded-full w-10 h-16 relative",
+            "flex flex-col items-center rounded-full w-10 h-10 relative",
             isSameDay(date, localSelectedDate)
               ? "bg-gradient-active text-white"
               : "text-white",

@@ -1,4 +1,5 @@
-import { Calendar } from "@/app/components/calendar/Calendar";
+import { ResponsiveCalendar } from "@/app/components/calendar/ResponsiveCalendar";
+import { getSelectedDate } from "@/app/lib/calendar-actions";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -6,10 +7,13 @@ export const metadata: Metadata = {
   description: "View and manage your daily schedule",
 };
 
-export default function CalendarPage() {
+export default async function CalendarPage() {
+  // Get the selected date from cookies
+  const selectedDate = await getSelectedDate();
+  
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-background p-4">
-      <Calendar />
+    <main className="flex min-h-screen items-center justify-center bg-gradient-background">
+      <ResponsiveCalendar initialDate={selectedDate} />
     </main>
   );
 }

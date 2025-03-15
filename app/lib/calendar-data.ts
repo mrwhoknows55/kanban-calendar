@@ -12,10 +12,48 @@ interface EventsByDate {
   [date: string]: Event[];
 }
 
+// Get current date in yyyy-MM-dd format
+const today = format(new Date(), "yyyy-MM-dd");
+const yesterday = format(new Date(Date.now() - 86400000), "yyyy-MM-dd");
+const tomorrow = format(new Date(Date.now() + 86400000), "yyyy-MM-dd");
+const dayAfterTomorrow = format(new Date(Date.now() + 2 * 86400000), "yyyy-MM-dd");
+const twoDaysAgo = format(new Date(Date.now() - 2 * 86400000), "yyyy-MM-dd");
+
 // This would typically come from a database or API
-// For now, we'll keep it as a static object
+// For now, we'll keep it as a static object with dynamic dates
 const events: EventsByDate = {
-  "2024-03-11": [
+  [twoDaysAgo]: [
+    {
+      id: "event-past-1",
+      title: "Project Kickoff",
+      description:
+        "Initial meeting to discuss project scope, timeline, and team responsibilities. Set up communication channels and project management tools.",
+      imageUrl:
+        "https://fastly.picsum.photos/id/433/1920/1080.jpg?hmac=_4-vRvvQSPtpfXL-XRDgPVTrSsQJWJZhWbBkl_Qk67k",
+      time: "10:00 AM",
+    },
+  ],
+  [yesterday]: [
+    {
+      id: "event-past-2",
+      title: "Design Review",
+      description:
+        "Review UI mockups and design system with the design team. Discuss implementation approach and potential challenges.",
+      imageUrl:
+        "https://fastly.picsum.photos/id/96/1920/1080.jpg?hmac=kKFGWKDL7yQZpfQJkLXQRvWtQHmXLmE6RyqxXYEgXTU",
+      time: "02:30 PM",
+    },
+    {
+      id: "event-past-3",
+      title: "Team Lunch",
+      description:
+        "Casual team lunch to celebrate recent project milestones and build team rapport.",
+      imageUrl:
+        "https://fastly.picsum.photos/id/292/1920/1080.jpg?hmac=HYdJVbXwxIbT-Qs_Ib9s9GbM9haT3RzHhgI4hj2Vsj0",
+      time: "12:00 PM",
+    },
+  ],
+  [today]: [
     {
       id: "event-1",
       title: "Coffee with Alex",
@@ -34,8 +72,17 @@ const events: EventsByDate = {
         "http://fastly.picsum.photos/id/737/1920/1080.jpg?hmac=aFzER8Y4wcWTrXVx2wVKSj10IqnygaF33gESj0WGDwI",
       time: "02:00 PM",
     },
+    {
+      id: "event-today-3",
+      title: "Client Call",
+      description:
+        "Monthly progress update with the client. Present completed features, gather feedback, and discuss next steps.",
+      imageUrl:
+        "https://fastly.picsum.photos/id/528/1920/1080.jpg?hmac=Rl_yjqZbQdXwQpYQ-YIJ7kUQJ7W-Gq6DYtQfhK1-qvI",
+      time: "04:30 PM",
+    },
   ],
-  "2024-03-12": [
+  [tomorrow]: [
     {
       id: "event-3",
       title: "Yoga Session",
@@ -54,8 +101,17 @@ const events: EventsByDate = {
         "https://fastly.picsum.photos/id/249/1920/1080.jpg?hmac=cPMNdgGXRh6T_KhRMuaQjRtAx5cWRraELjtL2MHTfYs",
       time: "03:30 PM",
     },
+    {
+      id: "event-tomorrow-3",
+      title: "Code Review",
+      description:
+        "Review pull requests and provide feedback on code quality, performance, and adherence to best practices.",
+      imageUrl:
+        "https://fastly.picsum.photos/id/119/1920/1080.jpg?hmac=3FWbZj_DpLd6jOz-Zk4_JQ9VA-GpWlmGKBC-7BKux_4",
+      time: "10:00 AM",
+    },
   ],
-  "2024-03-13": [
+  [dayAfterTomorrow]: [
     {
       id: "event-5",
       title: "Client Meeting",
@@ -64,6 +120,15 @@ const events: EventsByDate = {
       imageUrl:
         "https://fastly.picsum.photos/id/908/1920/1080.jpg?hmac=MeG_oA1s75hHAL_4JzCioh6--zyFTWSCTxOhe8ugvXo",
       time: "11:30 AM",
+    },
+    {
+      id: "event-future-2",
+      title: "Team Building",
+      description:
+        "Virtual team building activity to strengthen collaboration and communication within the team.",
+      imageUrl:
+        "https://fastly.picsum.photos/id/180/1920/1080.jpg?hmac=vMTmJ9Vj6okYrUKO-3EyVVYEAGBRh1KTbY6-rlxw-a0",
+      time: "03:00 PM",
     },
   ],
 };
