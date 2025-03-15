@@ -1,11 +1,9 @@
 "use client";
 
-import React from 'react';
-import Image from 'next/image';
-import { Event } from '@/app/lib/store';
-import { 
-  Card,
-} from '@/app/components/ui/card';
+import React from "react";
+import Image from "next/image";
+import { type Event } from "@/app/lib/calendar-data";
+import { Card } from "@/app/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/app/components/ui/dialog';
+} from "@/app/components/ui/dialog";
 
 interface EventCardProps {
   event: Event;
@@ -21,15 +19,16 @@ interface EventCardProps {
 
 export function EventCard({ event }: EventCardProps) {
   const [imageError, setImageError] = React.useState(false);
-  const fallbackImage = "https://fastly.picsum.photos/id/312/1920/1080.jpg?hmac=OD_fP9MUQN7uJ8NBR7tlii78qwHPUROGgohG4w16Kjw";
+  const fallbackImage =
+    "https://fastly.picsum.photos/id/312/1920/1080.jpg?hmac=OD_fP9MUQN7uJ8NBR7tlii78qwHPUROGgohG4w16Kjw";
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Card className="mb-4 cursor-pointer hover:shadow-md transition-all overflow-hidden rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.1)]">
           <div className="relative w-full h-[140px] overflow-hidden rounded-t-xl">
-            <Image 
-              src={imageError ? fallbackImage : event.imageUrl} 
+            <Image
+              src={imageError ? fallbackImage : event.imageUrl}
               alt={event.title}
               fill
               className="object-cover"
@@ -51,17 +50,19 @@ export function EventCard({ event }: EventCardProps) {
           </div>
         </Card>
       </DialogTrigger>
-      
+
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader className="bg-gradient-header text-white p-4 -m-6 mb-6 rounded-t-lg">
-          <DialogTitle className="text-white text-xl">{event.title}</DialogTitle>
+          <DialogTitle className="text-white text-xl">
+            {event.title}
+          </DialogTitle>
           <DialogDescription className="text-white/90 text-base">
             {event.time}
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="relative w-full h-[200px] rounded-md overflow-hidden">
-          <Image 
+          <Image
             src={imageError ? fallbackImage : event.imageUrl}
             alt={event.title}
             fill
@@ -71,7 +72,7 @@ export function EventCard({ event }: EventCardProps) {
             onError={() => setImageError(true)}
           />
         </div>
-        
+
         <div className="mt-4">
           <h4 className="text-[#222222] font-semibold mb-2">Description</h4>
           <p className="text-[#666666] text-sm leading-relaxed">
@@ -81,4 +82,4 @@ export function EventCard({ event }: EventCardProps) {
       </DialogContent>
     </Dialog>
   );
-} 
+}

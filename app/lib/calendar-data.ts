@@ -1,5 +1,4 @@
-import { create } from 'zustand';
-import { format, parse } from 'date-fns';
+import { format } from "date-fns";
 
 export interface Event {
   id: string;
@@ -13,6 +12,8 @@ interface EventsByDate {
   [date: string]: Event[];
 }
 
+// This would typically come from a database or API
+// For now, we'll keep it as a static object
 const events: EventsByDate = {
   "2024-03-11": [
     {
@@ -67,22 +68,29 @@ const events: EventsByDate = {
   ],
 };
 
-interface CalendarState {
-  selectedDate: Date;
-  events: EventsByDate;
-  setSelectedDate: (date: Date) => void;
-  getEventsForDate: (date: Date) => Event[];
+/**
+ * Get events for a specific date
+ * This function can be called from server components
+ */
+export async function getEventsForDate(date: Date): Promise<Event[]> {
+  // No need to simulate a database call with the mock data
+  const dateKey = format(date, "yyyy-MM-dd");
+  return events[dateKey] || [];
 }
 
-export const useCalendarStore = create<CalendarState>((set, get) => ({
-  selectedDate: new Date(2024, 2, 11), // March 11, 2024
-  events,
-  
-  setSelectedDate: (date) => set({ selectedDate: date }),
-  
-  getEventsForDate: (date) => {
-    const { events } = get();
-    const dateKey = format(date, 'yyyy-MM-dd');
-    return events[dateKey] || [];
-  },
-})); 
+/**
+ * Check if a date has any events
+ */
+export async function hasEventsForDate(date: Date): Promise<boolean> {
+  // No need to simulate a database call with the mock data
+  const dateKey = format(date, "yyyy-MM-dd");
+  return !!events[dateKey] && events[dateKey].length > 0;
+}
+
+/**
+ * Get all available dates with events
+ */
+export async function getEventDates(): Promise<string[]> {
+  // No need to simulate a database call with the mock data
+  return Object.keys(events);
+}

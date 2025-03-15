@@ -1,34 +1,51 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { format, startOfWeek, addDays } from "date-fns";
 
+/**
+ * Combines class names with Tailwind CSS
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatTime(date: Date): string {
-  return date.toLocaleTimeString('en-US', { 
-    hour: 'numeric', 
-    minute: '2-digit', 
-    hour12: true 
-  });
+/**
+ * Get an array of dates for the week containing the provided date
+ */
+export function getWeekDays(
+  date: Date,
+  weekStartsOn: 0 | 1 | 2 | 3 | 4 | 5 | 6 = 1,
+) {
+  const start = startOfWeek(date, { weekStartsOn });
+
+  return Array(7)
+    .fill(0)
+    .map((_, i) => {
+      return addDays(start, i);
+    });
 }
 
-export function formatDate(date: Date): string {
-  return date.toLocaleDateString('en-US', { 
-    weekday: 'short', 
-    month: 'short', 
-    day: 'numeric', 
-    year: 'numeric' 
-  });
+/**
+ * Format a date for display
+ */
+export function formatDate(date: Date, formatString: string): string {
+  return format(date, formatString);
 }
 
-export function getDaysOfWeek(currentDate: Date): Date[] {
-  const day = currentDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
-  const diff = currentDate.getDate() - day; // Adjust to get Sunday
-  
-  return Array(7).fill(0).map((_, i) => {
-    const date = new Date(currentDate);
-    date.setDate(diff + i);
-    return date;
-  });
-} 
+/**
+ * Check if two dates are the same day
+ */
+export function isSameDay(date1: Date, date2: Date): boolean {
+  return (
+    date1.getDate() === date2.getDate() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getFullYear() === date2.getFullYear()
+  );
+}
+
+/**
+ * Sort events by time
+ */
+export function sortEventsByTime(events: Array<{ time: string }>) {
+  return [...events].sort((a, b) => a.time.localeCompare(b.time));
+}

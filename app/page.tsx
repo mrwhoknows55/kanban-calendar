@@ -1,9 +1,5 @@
-import { Calendar } from '@/app/components/calendar/Calendar';
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return (
-    <main className="h-full w-full bg-gradient-background">
-      <Calendar />
-    </main>
-  );
+  redirect("/calendar");
 }

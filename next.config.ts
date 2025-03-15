@@ -5,14 +5,20 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'fastly.picsum.photos',
+        protocol: "https",
+        hostname: "fastly.picsum.photos",
       },
       {
-        protocol: 'http',
-        hostname: 'fastly.picsum.photos',
+        protocol: "http",
+        hostname: "fastly.picsum.photos",
       },
     ],
+  },
+  experimental: {
+    optimizePackageImports: ["lucide-react"],
+    serverActions: {
+      allowedOrigins: ["localhost:3000"],
+    },
   },
 };
 
