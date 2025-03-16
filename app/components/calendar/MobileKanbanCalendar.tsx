@@ -9,6 +9,7 @@ import { cn, formatDate } from "@/app/lib/utils";
 import { useSwipe } from "@/app/lib/gesture-utils";
 import { ChevronLeft, ChevronRight, MoveHorizontal, ArrowRight } from "lucide-react";
 import { useCalendarEvents } from "@/app/lib/calendar-hooks";
+import { useDragStore } from "@/app/lib/gesture-utils";
 
 interface MobileKanbanCalendarProps {
   initialDate: Date;
@@ -32,6 +33,9 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
   
   // Use our custom hook for managing events
   const { events, moveEvent } = useCalendarEvents({ initialEvents });
+  
+  // Use the global drag store
+  const { startDrag, endDrag } = useDragStore();
   
   // Format the current date as a string key for the events object
   const currentDateKey = format(currentDate, "yyyy-MM-dd");
@@ -83,6 +87,9 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
   const handleEventDragStart = (event: Event) => {
     setIsDragging(true);
     setDraggedEvent(event);
+    
+    // Update global drag state
+    startDrag();
   };
   
   // Handle event drag end
@@ -116,6 +123,9 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
     setDragDirection(null);
     setIsDragging(false);
     setDraggedEvent(null);
+    
+    // Update global drag state
+    endDrag();
   };
   
   // Generate dates for the week view based on currentWeekStart

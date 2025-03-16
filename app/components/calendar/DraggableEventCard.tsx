@@ -19,6 +19,7 @@ import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-mo
 import { X, Clock, Calendar, ArrowLeft } from "lucide-react";
 import { Root as VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { cn } from "@/app/lib/utils";
+import { useDragStore } from "@/app/lib/gesture-utils";
 
 interface DraggableEventCardProps {
   event: Event;
@@ -62,8 +63,11 @@ export function DraggableEventCard({
 }: DraggableEventCardProps) {
   const [imageError, setImageError] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [wasDragged, setWasDragged] = useState(false);
+  const [dragDistance, setDragDistance] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
+  
+  // Use the global drag store
+  const { startDrag, endDrag, canOpenCard } = useDragStore();
   
   const fallbackImage =
     "https://fastly.picsum.photos/id/312/1920/1080.jpg?hmac=OD_fP9MUQN7uJ8NBR7tlii78qwHPUROGgohG4w16Kjw";
@@ -80,13 +84,21 @@ export function DraggableEventCard({
     [0.95, 0.97, 1, 0.97, 0.95]
   );
   
+  // Track drag distance for determining if it was a click or drag
+  const handleDrag = () => {
+    setDragDistance(Math.abs(x.get()));
+  };
+  
   // Handle drag start
   const handleDragStart = () => {
     setIsDragging(true);
-    setWasDragged(false);
+    setDragDistance(0);
     
     // Add dragging class to body for global cursor changes
     document.body.classList.add('dragging');
+    
+    // Update global drag state
+    startDrag();
     
     // Call the onDragStart callback if provided
     if (onDragStart) {
@@ -97,37 +109,34 @@ export function DraggableEventCard({
   // Handle drag end
   const handleDragEnd = () => {
     const xOffset = x.get();
-    
-    // Only consider it a drag if it moved more than a minimal amount
-    if (Math.abs(xOffset) > 10) {
-      setWasDragged(true);
-    }
+    const wasDragged = dragDistance > 10;
     
     setIsDragging(false);
     
     // Remove dragging class from body
     document.body.classList.remove('dragging');
     
-    // Call the onDragEnd callback regardless of threshold
-    // Let the parent component decide what to do
-    if (onDragEnd) {
+    // Update global drag state
+    endDrag();
+    
+    // Only call the drag end callback if it was actually dragged
+    if (wasDragged && onDragEnd) {
       const direction = xOffset > 0 ? 1 : -1;
       onDragEnd(event, direction);
     }
     
     // Reset position
     x.set(0);
-    
-    // Reset wasDragged after a short delay to allow click handlers to check it
-    setTimeout(() => {
-      setWasDragged(false);
-    }, 300);
   };
 
-  // Handle card click
-  const handleCardClick = () => {
-    // Only open the dialog if we weren't dragging
-    if (!isDragging && !wasDragged && onOpenChange) {
+  // Handle card click - completely separate from drag handling
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only treat as a click if:
+    // 1. Not currently dragging
+    // 2. Drag distance is minimal
+    // 3. No drag operation is in progress globally
+    // 4. Enough time has passed since the last drag completed
+    if (!isDragging && dragDistance < 10 && canOpenCard() && onOpenChange) {
       onOpenChange(true);
     }
   };
@@ -217,74 +226,73 @@ export function DraggableEventCard({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <motion.div
-          ref={cardRef}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.1} // Reduce elasticity to keep card more rigid
-          dragTransition={{ 
-            bounceStiffness: 600, 
-            bounceDamping: 30,
-            power: 0,
-            timeConstant: 0,
-            restDelta: 0.001,
-            modifyTarget: (target) => {
-              // Always return to original position
-              return 0;
-            }
-          }}
-          style={{ x, rotate, scale }}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-          whileTap={{ scale: 0.98 }}
-          whileDrag={{ 
-            zIndex: 50,
-            boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
-            cursor: "grabbing",
-            opacity: 0.7
-          }}
-          transition={sharedTransition}
-          className="touch-none select-none relative"
+      <motion.div
+        ref={cardRef}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.1} // Reduce elasticity to keep card more rigid
+        dragTransition={{ 
+          bounceStiffness: 600, 
+          bounceDamping: 30,
+          power: 0,
+          timeConstant: 0,
+          restDelta: 0.001,
+          modifyTarget: (target) => {
+            // Always return to original position
+            return 0;
+          }
+        }}
+        style={{ x, rotate, scale }}
+        onDragStart={handleDragStart}
+        onDrag={handleDrag}
+        onDragEnd={handleDragEnd}
+        whileTap={{ scale: 0.98 }}
+        whileDrag={{ 
+          zIndex: 50,
+          boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
+          cursor: "grabbing",
+          opacity: 0.7
+        }}
+        transition={sharedTransition}
+        className="touch-none select-none relative"
+      >
+        <Card 
+          className="mb-5 cursor-grab active:cursor-grabbing hover:shadow-md transition-all overflow-hidden rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.1)]"
+          onClick={handleCardClick}
         >
-          <Card 
-            className="mb-5 cursor-grab active:cursor-grabbing hover:shadow-md transition-all overflow-hidden rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.1)]"
-            onClick={handleCardClick}
-          >
-            <div className="relative w-full h-[160px] overflow-hidden rounded-t-xl">
-              <Image
-                src={imageError ? fallbackImage : event.imageUrl}
-                alt={event.title}
-                fill
-                className="object-cover pointer-events-none"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                priority
-                onError={() => setImageError(true)}
-                draggable={false}
-              />
-              <div 
-                className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10"
-              >
-                {event.time}
-              </div>
-            </div>
+          <div className="relative w-full h-[160px] overflow-hidden rounded-t-xl">
+            <Image
+              src={imageError ? fallbackImage : event.imageUrl}
+              alt={event.title}
+              fill
+              className="object-cover pointer-events-none"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority
+              onError={() => setImageError(true)}
+              draggable={false}
+            />
             <div 
-              className="p-5 flex flex-col"
+              className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10"
             >
-              <h3 
-                className="text-lg font-semibold text-[#222222] mb-2"
-              >
-                {event.title}
-              </h3>
-              <p 
-                className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2"
-              >
-                {event.description}
-              </p>
+              {event.time}
             </div>
-          </Card>
-        </motion.div>
-      </DialogTrigger>
+          </div>
+          <div 
+            className="p-5 flex flex-col"
+          >
+            <h3 
+              className="text-lg font-semibold text-[#222222] mb-2"
+            >
+              {event.title}
+            </h3>
+            <p 
+              className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2"
+            >
+              {event.description}
+            </p>
+          </div>
+        </Card>
+      </motion.div>
 
       <AnimatePresence mode="wait">
         {isOpen && (

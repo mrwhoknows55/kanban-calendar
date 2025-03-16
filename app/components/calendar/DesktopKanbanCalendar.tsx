@@ -8,6 +8,7 @@ import { type Event } from "@/app/lib/calendar-data";
 import { cn, formatDate } from "@/app/lib/utils";
 import { ChevronLeft, ChevronRight, MoveHorizontal, ArrowRight } from "lucide-react";
 import { useCalendarEvents } from "@/app/lib/calendar-hooks";
+import { useDragStore } from "@/app/lib/gesture-utils";
 
 // Helper function to convert time string to comparable value
 const getTimeValue = (timeStr: string) => {
@@ -44,6 +45,9 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
   // Use our custom hook for managing events
   const { events, moveEvent } = useCalendarEvents({ initialEvents });
   
+  // Use the global drag store
+  const { startDrag, endDrag } = useDragStore();
+  
   // Handle week navigation
   const handleWeekChange = (direction: number) => {
     const newWeekStart = direction > 0
@@ -58,6 +62,9 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
   const handleEventDragStart = (event: Event, sourceDate: string) => {
     setIsDragging(true);
     setDraggedEvent({ event, sourceDate });
+    
+    // Update global drag state
+    startDrag();
   };
   
   // Handle event drag end
@@ -72,6 +79,9 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
     setIsDragging(false);
     setActiveDragTarget(null);
     setDraggedEvent(null);
+    
+    // Update global drag state
+    endDrag();
   };
   
   // Generate dates for the week view based on currentWeekStart
@@ -290,13 +300,27 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
                     )}>
                       <p className="text-center py-2">No events</p>
                       {isActiveDropTarget && isDragging && !isSourceColumn && draggedEvent && (
-                        <div className="event-wrapper">
+                        <motion.div 
+                          className="event-wrapper"
+                          layout
+                          layoutId={`empty-column-${dateKey}`}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                          transition={{ 
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 30,
+                            mass: 1
+                          }}
+                        >
                           <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.2 }}
                             className="mb-4 mx-auto max-w-[300px] w-full"
+                            layoutId={`ghost-empty-${dateKey}`}
                           >
                             <div className="bg-blue-50 border-2 border-blue-400 rounded-xl shadow-lg overflow-hidden">
                               <div className="relative w-full h-[160px] overflow-hidden rounded-t-xl">
@@ -316,7 +340,7 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
                             </div>
                           </motion.div>
                           <p className="text-blue-500 font-medium text-center">Drop to add event</p>
-                        </div>
+                        </motion.div>
                       )}
                     </div>
                   ) : (
@@ -326,28 +350,12 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
                         const position = getGhostCardPosition(dateKey, draggedEvent.event);
                         return (
                           <div className="relative">
-                            {position.isFirst && (
-                              <div className="absolute top-0 left-0 right-0 h-1 bg-blue-500 rounded-full z-30 -mt-1"></div>
-                            )}
-                            {!position.isFirst && !position.isLast && (
-                              <div className="absolute left-0 right-0 z-30 flex items-center justify-center" 
-                                style={{ top: `${position.insertIndex * 84 - 2}px` }}>
-                                <div className="w-3/4 h-1 bg-blue-500 rounded-full"></div>
-                                <div className="absolute -ml-1 w-3 h-3 rounded-full bg-blue-500"></div>
-                              </div>
-                            )}
-                            {position.isLast && (
-                              <div className="absolute left-0 right-0 z-30 flex items-center justify-center" 
-                                style={{ top: `${position.insertIndex * 84 - 2}px` }}>
-                                <div className="w-3/4 h-1 bg-blue-500 rounded-full"></div>
-                                <div className="absolute -ml-1 w-3 h-3 rounded-full bg-blue-500"></div>
-                              </div>
-                            )}
+                            {/* Position indicators removed to prevent overlapping with cards */}
                           </div>
                         );
                       })()}
                       
-                      <AnimatePresence mode="wait">
+                      <AnimatePresence mode="popLayout" initial={false}>
                         {dayEvents.map((event, index) => {
                           // Calculate if we need to insert the ghost card before this event
                           const shouldInsertGhostBefore = 
@@ -368,7 +376,21 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
                             getGhostCardPosition(dateKey, draggedEvent.event).insertIndex === dayEvents.length;
                           
                           return (
-                            <div key={event.id} className="event-wrapper">
+                            <motion.div 
+                              key={event.id} 
+                              className="event-wrapper"
+                              layout
+                              layoutId={`event-${event.id}`}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                              transition={{ 
+                                type: "spring",
+                                stiffness: 500,
+                                damping: 30,
+                                mass: 1
+                              }}
+                            >
                               {shouldInsertGhostBefore && (
                                 <motion.div
                                   initial={{ opacity: 0, height: 0 }}
@@ -376,6 +398,7 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
                                   exit={{ opacity: 0, height: 0 }}
                                   transition={{ duration: 0.2 }}
                                   className="mb-4 mx-auto max-w-[300px] w-full"
+                                  layoutId={`ghost-before-${event.id}`}
                                 >
                                   <div className="bg-blue-50 border-2 border-blue-400 rounded-xl shadow-lg overflow-hidden">
                                     <div className="relative w-full h-[160px] overflow-hidden rounded-t-xl">
@@ -397,12 +420,13 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
                               )}
                               
                               <motion.div
+                                layout
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
                                 transition={{ 
                                   duration: 0.2, 
-                                  delay: 0.05 + (index * 0.03),
+                                  delay: 0.05,
                                   ease: "easeOut"
                                 }}
                               >
@@ -429,6 +453,7 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
                                   exit={{ opacity: 0, height: 0 }}
                                   transition={{ duration: 0.2 }}
                                   className="mt-4 mx-auto max-w-[300px] w-full"
+                                  layoutId={`ghost-after-${event.id}`}
                                 >
                                   <div className="bg-blue-50 border-2 border-blue-400 rounded-xl shadow-lg overflow-hidden">
                                     <div className="relative w-full h-[160px] overflow-hidden rounded-t-xl">
@@ -448,7 +473,7 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
                                   </div>
                                 </motion.div>
                               )}
-                            </div>
+                            </motion.div>
                           );
                         })}
                       </AnimatePresence>

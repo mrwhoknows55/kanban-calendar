@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { create } from 'zustand';
 
 interface SwipeHandlers {
   onSwipeLeft?: () => void;
@@ -12,6 +13,14 @@ interface SwipeHandlers {
 interface UseSwipeOptions {
   threshold?: number;
   preventDefault?: boolean;
+}
+
+interface DragState {
+  isDragging: boolean;
+  dragCompleteTimestamp: number | null;
+  startDrag: () => void;
+  endDrag: () => void;
+  canOpenCard: () => boolean;
 }
 
 /**
@@ -80,4 +89,34 @@ export function useSwipe(
       document.removeEventListener("touchend", handleTouchEnd);
     };
   }, [handlers, threshold, preventDefault]);
-} 
+}
+
+// Create a global store to track drag state across components
+export const useDragStore = create<DragState>((set, get) => ({
+  isDragging: false,
+  dragCompleteTimestamp: null,
+  
+  startDrag: () => {
+    set({ isDragging: true });
+  },
+  
+  endDrag: () => {
+    set({ 
+      isDragging: false,
+      dragCompleteTimestamp: Date.now()
+    });
+  },
+  
+  // Only allow card opening if no drag is in progress and 
+  // at least 500ms have passed since the last drag completed
+  canOpenCard: () => {
+    const { isDragging, dragCompleteTimestamp } = get();
+    
+    if (isDragging) return false;
+    
+    if (dragCompleteTimestamp === null) return true;
+    
+    const timeSinceDragComplete = Date.now() - dragCompleteTimestamp;
+    return timeSinceDragComplete > 500;
+  }
+})); 
