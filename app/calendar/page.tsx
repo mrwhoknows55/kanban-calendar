@@ -32,11 +32,10 @@ async function getEvents() {
 
 export default async function CalendarPage() {
   const events = await getEvents();
-  const today = new Date();
 
   return (
     <main className="min-h-screen">
-      <ResponsiveKanbanCalendar initialDate={today} events={events} />
+      <ResponsiveKanbanCalendar initialDate={new Date()} events={events} />
     </main>
   );
 }

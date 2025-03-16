@@ -22,17 +22,17 @@ const getTimeValue = (timeStr: string) => {
 };
 
 interface DesktopKanbanCalendarProps {
+  initialDate: Date;
   events: Record<string, Event[]>;
 }
 
 export function DesktopKanbanCalendar({
+  initialDate: initialDate,
   events: initialEvents,
 }: DesktopKanbanCalendarProps) {
-  // Always use today as the initial date
-  const today = new Date();
 
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
-    startOfWeek(today, { weekStartsOn: 1 }),
+    startOfWeek(initialDate, { weekStartsOn: 1 }),
   );
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isEventOpen, setIsEventOpen] = useState<boolean>(false);

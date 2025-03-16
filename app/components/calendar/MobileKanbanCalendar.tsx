@@ -34,14 +34,13 @@ interface MobileKanbanCalendarProps {
 }
 
 export function MobileKanbanCalendar({
+  initialDate: initialDate,
   events: initialEvents,
 }: MobileKanbanCalendarProps) {
-  // Always use today as the initial date
-  const today = new Date();
 
-  const [currentDate, setCurrentDate] = useState<Date>(today);
+  const [currentDate, setCurrentDate] = useState<Date>(initialDate);
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
-    startOfWeek(today, { weekStartsOn: 1 }),
+    startOfWeek(currentDate, { weekStartsOn: 1 }),
   );
   const [direction, setDirection] = useState<number>(0);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
