@@ -112,6 +112,9 @@ export function MobileKanbanCalendar({
 
   const weekDates = generateWeekDates();
 
+  const fallbackImageUrl =
+    "https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=1920&h=1080&auto=format&fit=crop";
+
   return (
     <div className="flex flex-col w-full h-screen overflow-hidden">
       {/* Week header */}
@@ -258,8 +261,7 @@ export function MobileKanbanCalendar({
                               ) => {
                                 // Fallback image on error
                                 const target = e.target as HTMLImageElement;
-                                target.src =
-                                  "https://fastly.picsum.photos/id/312/1920/1080.jpg?hmac=OD_fP9MUQN7uJ8NBR7tlii78qwHPUROGgohG4w16Kjw";
+                                target.src = fallbackImageUrl;
                               }}
                             />
                             <div className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10">
@@ -315,8 +317,7 @@ export function MobileKanbanCalendar({
                     onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                       // Fallback image on error
                       const target = e.target as HTMLImageElement;
-                      target.src =
-                        "https://fastly.picsum.photos/id/312/1920/1080.jpg?hmac=OD_fP9MUQN7uJ8NBR7tlii78qwHPUROGgohG4w16Kjw";
+                      target.src = fallbackImageUrl;
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>

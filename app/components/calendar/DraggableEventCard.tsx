@@ -72,8 +72,8 @@ export function DraggableEventCard({
   // Use the global drag store
   const { startDrag, endDrag, canOpenCard } = useDragStore();
 
-  const fallbackImage =
-    "https://fastly.picsum.photos/id/312/1920/1080.jpg?hmac=OD_fP9MUQN7uJ8NBR7tlii78qwHPUROGgohG4w16Kjw";
+  const fallbackImageUrl =
+    "https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=1920&h=1080&auto=format&fit=crop";
 
   // Motion values for drag
   const x = useMotionValue(0);
@@ -254,7 +254,7 @@ export function DraggableEventCard({
         >
           <div className="relative w-full h-[160px] overflow-hidden rounded-t-xl">
             <Image
-              src={imageError ? fallbackImage : event.imageUrl}
+              src={imageError ? fallbackImageUrl : event.imageUrl}
               alt={event.title}
               fill
               className="object-cover pointer-events-none"
@@ -295,7 +295,7 @@ export function DraggableEventCard({
               {/* Cover image section */}
               <div className="relative w-full h-[40vh] sm:h-[280px] overflow-hidden">
                 <Image
-                  src={imageError ? fallbackImage : event.imageUrl}
+                  src={imageError ? fallbackImageUrl : event.imageUrl}
                   alt={event.title}
                   fill
                   className="object-cover"

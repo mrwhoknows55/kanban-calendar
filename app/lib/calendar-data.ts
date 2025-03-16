@@ -63,7 +63,7 @@ const events: EventsByDate = {
       description:
         "Meet with Alex to brainstorm ideas for the upcoming product launch. We'll review market research and competitor analysis to identify potential opportunities and challenges.",
       imageUrl:
-        "https://fastly.picsum.photos/id/312/1920/1080.jpg?hmac=OD_fP9MUQN7uJ8NBR7tlii78qwHPUROGgohG4w16Kjw",
+        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "09:00 AM",
     },
     {
@@ -72,7 +72,7 @@ const events: EventsByDate = {
       description:
         "Weekly standup meeting with the dev team. Discuss progress, blockers, and align on next week's priorities.",
       imageUrl:
-        "http://fastly.picsum.photos/id/737/1920/1080.jpg?hmac=aFzER8Y4wcWTrXVx2wVKSj10IqnygaF33gESj0WGDwI",
+        "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "02:00 PM",
     },
     {
@@ -81,7 +81,7 @@ const events: EventsByDate = {
       description:
         "Monthly progress update with the client. Present completed features, gather feedback, and discuss next steps.",
       imageUrl:
-        "https://fastly.picsum.photos/id/528/1920/1080.jpg?hmac=Rl_yjqZbQdXwQpYQ-YIJ7kUQJ7W-Gq6DYtQfhK1-qvI",
+        "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "04:30 PM",
     },
   ],
@@ -92,7 +92,7 @@ const events: EventsByDate = {
       description:
         "Join for a relaxing yoga session to reduce stress and improve mindfulness. Suitable for all levels, focusing on gentle stretches.",
       imageUrl:
-        "https://fastly.picsum.photos/id/392/1920/1080.jpg?hmac=Fvbf7C1Rcozg8EccwYPqsGkk_o6Bld2GQRDPZKWpd7g",
+        "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "12:00 PM",
     },
     {
@@ -101,7 +101,7 @@ const events: EventsByDate = {
       description:
         "Demo of UI improvements and performance optimizations to gather stakeholder feedback.",
       imageUrl:
-        "https://fastly.picsum.photos/id/249/1920/1080.jpg?hmac=cPMNdgGXRh6T_KhRMuaQjRtAx5cWRraELjtL2MHTfYs",
+        "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "03:30 PM",
     },
     {
@@ -110,7 +110,7 @@ const events: EventsByDate = {
       description:
         "Review pull requests and provide feedback on code quality, performance, and adherence to best practices.",
       imageUrl:
-        "https://fastly.picsum.photos/id/119/1920/1080.jpg?hmac=3FWbZj_DpLd6jOz-Zk4_JQ9VA-GpWlmGKBC-7BKux_4",
+        "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "10:00 AM",
     },
   ],
@@ -121,7 +121,7 @@ const events: EventsByDate = {
       description:
         "Review project progress, timeline adjustments, and outline roadmap for next quarter with the client.",
       imageUrl:
-        "https://fastly.picsum.photos/id/908/1920/1080.jpg?hmac=MeG_oA1s75hHAL_4JzCioh6--zyFTWSCTxOhe8ugvXo",
+        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "11:30 AM",
     },
     {
@@ -130,7 +130,7 @@ const events: EventsByDate = {
       description:
         "Virtual team building activity to strengthen collaboration and communication within the team.",
       imageUrl:
-        "https://fastly.picsum.photos/id/180/1920/1080.jpg?hmac=vMTmJ9Vj6okYrUKO-3EyVVYEAGBRh1KTbY6-rlxw-a0",
+        "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "03:00 PM",
     },
   ],

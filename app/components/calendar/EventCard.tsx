@@ -19,8 +19,8 @@ interface EventCardProps {
 
 export function EventCard({ event }: EventCardProps) {
   const [imageError, setImageError] = React.useState(false);
-  const fallbackImage =
-    "https://fastly.picsum.photos/id/312/1920/1080.jpg?hmac=OD_fP9MUQN7uJ8NBR7tlii78qwHPUROGgohG4w16Kjw";
+  const fallbackImageUrl =
+    "https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=1920&h=1080&auto=format&fit=crop";
 
   return (
     <Dialog>
@@ -28,7 +28,7 @@ export function EventCard({ event }: EventCardProps) {
         <Card className="mb-4 cursor-pointer hover:shadow-md transition-all overflow-hidden rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.1)]">
           <div className="relative w-full h-[140px] overflow-hidden rounded-t-xl">
             <Image
-              src={imageError ? fallbackImage : event.imageUrl}
+              src={imageError ? fallbackImageUrl : event.imageUrl}
               alt={event.title}
               fill
               className="object-cover"
@@ -63,7 +63,7 @@ export function EventCard({ event }: EventCardProps) {
 
         <div className="relative w-full h-[200px] rounded-md overflow-hidden">
           <Image
-            src={imageError ? fallbackImage : event.imageUrl}
+            src={imageError ? fallbackImageUrl : event.imageUrl}
             alt={event.title}
             fill
             className="object-cover"
