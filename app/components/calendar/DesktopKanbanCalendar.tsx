@@ -615,11 +615,17 @@ export function DesktopKanbanCalendar({
       <AnimatePresence mode="sync" onExitComplete={() => {}}>
         {isEventOpen && selectedEvent && (
           <motion.div 
-            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-auto"
             initial={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
             animate={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
             exit={{ backgroundColor: "rgba(0, 0, 0, 0)", transition: { duration: 0.2 } }}
             transition={{ duration: 0.3 }}
+            onClick={(e) => {
+              // Close the modal when clicking the backdrop, but not when clicking the content
+              if (e.target === e.currentTarget) {
+                setIsEventOpen(false);
+              }
+            }}
           >
             <motion.div
               className="relative z-10 w-full h-full max-w-6xl mx-auto flex flex-col overflow-hidden bg-white rounded-xl shadow-xl md:h-[85vh] md:my-auto pointer-events-auto"
@@ -649,6 +655,7 @@ export function DesktopKanbanCalendar({
                   duration: 0.25
                 }
               }}
+              onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}
               <motion.button 

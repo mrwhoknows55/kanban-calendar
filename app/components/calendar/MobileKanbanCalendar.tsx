@@ -242,13 +242,19 @@ export function MobileKanbanCalendar({
                         }}
                       >
                         <Card
-                          className="mb-5 hover:shadow-md transition-all overflow-hidden rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.1)]"
+                          className="mb-5 cursor-pointer hover:shadow-md transition-all overflow-hidden rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.1)]"
                           onClick={() => {
                             setSelectedEvent(event);
                             setIsEventOpen(true);
                           }}
                         >
-                          <div className="relative w-full h-[160px] overflow-hidden rounded-t-xl">
+                          <motion.div 
+                            className="relative w-full h-[160px] overflow-hidden rounded-t-xl"
+                            layoutId={`image-container-${event.id}`}
+                            transition={{
+                              layout: { type: "spring", stiffness: 300, damping: 25 }
+                            }}
+                          >
                             <Image
                               src={event.imageUrl}
                               alt={event.title}
@@ -264,18 +270,42 @@ export function MobileKanbanCalendar({
                                 target.src = fallbackImageUrl;
                               }}
                             />
-                            <div className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10">
+                            <motion.div 
+                              className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10"
+                              layoutId={`time-badge-${event.id}`}
+                              transition={{
+                                layout: { type: "spring", stiffness: 500, damping: 25 }
+                              }}
+                            >
                               {event.time}
-                            </div>
-                          </div>
-                          <div className="p-5 flex flex-col">
-                            <h3 className="text-lg font-semibold text-[#222222] mb-2">
+                            </motion.div>
+                          </motion.div>
+                          <motion.div 
+                            className="p-5 flex flex-col"
+                            layoutId={`content-container-${event.id}`}
+                            transition={{
+                              layout: { type: "spring", stiffness: 300, damping: 25 }
+                            }}
+                          >
+                            <motion.h3 
+                              className="text-lg font-semibold text-[#222222] mb-2"
+                              layoutId={`title-${event.id}`}
+                              transition={{
+                                layout: { type: "spring", stiffness: 300, damping: 25 }
+                              }}
+                            >
                               {event.title}
-                            </h3>
-                            <p className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2">
+                            </motion.h3>
+                            <motion.p 
+                              className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2"
+                              layoutId={`description-${event.id}`}
+                              transition={{
+                                layout: { type: "spring", stiffness: 300, damping: 25 }
+                              }}
+                            >
                               {event.description}
-                            </p>
-                          </div>
+                            </motion.p>
+                          </motion.div>
                         </Card>
                       </motion.div>
                     ))}
@@ -289,9 +319,19 @@ export function MobileKanbanCalendar({
 
       {/* Event details dialog */}
       <Dialog open={isEventOpen} onOpenChange={setIsEventOpen}>
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="sync" onExitComplete={() => {}}>
           {isEventOpen && selectedEvent && (
-            <DialogContent className="p-0 overflow-hidden max-w-none w-full h-full sm:h-auto sm:max-w-[500px] sm:rounded-lg border-none">
+            <DialogContent 
+              className="p-0 overflow-hidden max-w-none w-full h-full sm:h-auto sm:max-w-[500px] sm:rounded-lg border-none"
+              onPointerDownOutside={(e) => {
+                // Prevent interaction with elements behind the dialog
+                e.preventDefault();
+              }}
+              onInteractOutside={(e) => {
+                // Prevent any interaction outside the dialog when it's open
+                e.preventDefault();
+              }}
+            >
               <VisuallyHidden>
                 <DialogTitle>{selectedEvent.title}</DialogTitle>
                 <DialogDescription>
@@ -299,14 +339,52 @@ export function MobileKanbanCalendar({
                 </DialogDescription>
               </VisuallyHidden>
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-                className="flex flex-col h-full bg-white"
+                layoutId={`card-container-${selectedEvent.id}`}
+                initial={{ 
+                  borderRadius: 12, 
+                  y: 20, 
+                  opacity: 0.8, 
+                  scale: 0.8,
+                  rotate: 1
+                }}
+                animate={{ 
+                  borderRadius: 12, 
+                  y: 0, 
+                  opacity: 1, 
+                  scale: 1,
+                  rotate: 0,
+                  transition: {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 25,
+                    mass: 0.8,
+                    velocity: 2
+                  }
+                }}
+                exit={{ 
+                  borderRadius: 12, 
+                  y: 30, 
+                  opacity: 0, 
+                  scale: 0.8,
+                  rotate: -1,
+                  transition: {
+                    type: "spring",
+                    stiffness: 350,
+                    damping: 22,
+                    mass: 0.7,
+                    velocity: 3
+                  }
+                }}
+                className="flex flex-col h-full bg-white shadow-2xl"
               >
                 {/* Cover image section */}
-                <div className="relative w-full h-[40vh] sm:h-[280px] overflow-hidden">
+                <motion.div 
+                  className="relative w-full h-[40vh] sm:h-[280px] overflow-hidden rounded-t-xl"
+                  layoutId={`image-container-${selectedEvent.id}`}
+                  transition={{
+                    layout: { type: "spring", stiffness: 300, damping: 25 }
+                  }}
+                >
                   <Image
                     src={selectedEvent.imageUrl}
                     alt={selectedEvent.title}
@@ -320,85 +398,252 @@ export function MobileKanbanCalendar({
                       target.src = fallbackImageUrl;
                     }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10"></div>
 
                   {/* Header content overlay */}
                   <div className="absolute bottom-0 left-0 p-8 text-white w-full">
                     <div className="flex items-center justify-between mb-2">
-                      <h2 className="text-2xl font-bold">
+                      <motion.h2 
+                        className="text-2xl font-bold"
+                        layoutId={`title-${selectedEvent.id}`}
+                        transition={{
+                          layout: { type: "spring", stiffness: 300, damping: 25 }
+                        }}
+                      >
                         {selectedEvent.title}
-                      </h2>
+                      </motion.h2>
 
-                      <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-white">
+                      <motion.div 
+                        className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-white"
+                        layoutId={`time-badge-${selectedEvent.id}`}
+                        transition={{
+                          layout: { type: "spring", stiffness: 500, damping: 25 }
+                        }}
+                      >
                         {selectedEvent.time}
-                      </div>
+                      </motion.div>
                     </div>
 
-                    <div className="flex items-center">
+                    <motion.div 
+                      className="flex items-center"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ 
+                        opacity: 1, 
+                        y: 0,
+                        transition: { 
+                          type: "spring", 
+                          stiffness: 400, 
+                          damping: 20,
+                          delay: 0.2
+                        }
+                      }}
+                      exit={{ 
+                        opacity: 0, 
+                        y: 5, 
+                        transition: { 
+                          duration: 0.15,
+                          ease: "easeInOut"
+                        }
+                      }}
+                    >
                       <Calendar className="w-4 h-4 mr-2 opacity-80" />
                       <span className="text-sm text-white/90">Today</span>
-                    </div>
+                    </motion.div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Content section */}
-                <div className="flex-1 overflow-y-auto bg-gradient-background">
-                  <motion.div
+                <motion.div 
+                  className="flex-1 overflow-y-auto bg-white"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ 
+                    opacity: 1, 
+                    y: 0,
+                    transition: { 
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 25,
+                      mass: 0.8,
+                      delay: 0.1
+                    }
+                  }}
+                  exit={{ 
+                    opacity: 0, 
+                    y: 10, 
+                    transition: { 
+                      duration: 0.2,
+                      ease: "easeOut"
+                    }
+                  }}
+                >
+                  <motion.div 
                     className="p-8"
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.1, duration: 0.2 }}
+                    layoutId={`content-container-${selectedEvent.id}`}
+                    transition={{
+                      layout: { type: "spring", stiffness: 300, damping: 25 }
+                    }}
                   >
-                    <div className="mb-8">
-                      <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                        Description
-                      </h3>
-                      <p className="text-gray-600 leading-relaxed text-base">
-                        {selectedEvent.description}
-                      </p>
-                    </div>
-
                     <motion.div
-                      className="border-t border-gray-200 pt-6"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.15, duration: 0.2 }}
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ 
+                        height: "auto", 
+                        opacity: 1,
+                        transition: {
+                          height: { type: "spring", stiffness: 300, damping: 25, delay: 0.1 },
+                          opacity: { duration: 0.2, delay: 0.2 }
+                        }
+                      }}
+                      exit={{ 
+                        height: 0, 
+                        opacity: 0, 
+                        transition: { 
+                          height: { duration: 0.2 },
+                          opacity: { duration: 0.15 }
+                        }
+                      }}
+                      className="overflow-hidden"
                     >
-                      <h3 className="text-sm font-medium text-gray-500 mb-4">
-                        Event Details
-                      </h3>
-
-                      <div className="space-y-4">
-                        <div className="flex items-start">
-                          <Calendar className="w-5 h-5 text-[#6c63ff] mr-4 mt-0.5" />
-                          <div>
-                            <p className="text-sm font-medium text-gray-700">
-                              Date & Time
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              Today at {selectedEvent.time}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start">
-                          <Clock className="w-5 h-5 text-[#6c63ff] mr-4 mt-0.5" />
-                          <div>
-                            <p className="text-sm font-medium text-gray-700">
-                              Duration
-                            </p>
-                            <p className="text-sm text-gray-500">1 hour</p>
-                          </div>
-                        </div>
+                      <div className="mb-8">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                          Description
+                        </h3>
+                        <motion.p 
+                          className="text-gray-600 leading-relaxed text-base"
+                          layoutId={`description-${selectedEvent.id}`}
+                          transition={{
+                            layout: { type: "spring", stiffness: 300, damping: 25 }
+                          }}
+                        >
+                          {selectedEvent.description}
+                        </motion.p>
                       </div>
+
+                      <motion.div
+                        className="border-t border-gray-200 pt-6"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ 
+                          opacity: 1, 
+                          y: 0,
+                          transition: {
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 25,
+                            delay: 0.25
+                          }
+                        }}
+                        exit={{ 
+                          opacity: 0, 
+                          y: 5, 
+                          transition: { 
+                            duration: 0.1,
+                            ease: "easeIn"
+                          }
+                        }}
+                      >
+                        <h3 className="text-sm font-medium text-gray-500 mb-4">
+                          Event Details
+                        </h3>
+
+                        <div className="space-y-4">
+                          <motion.div 
+                            className="flex items-start"
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ 
+                              opacity: 1, 
+                              x: 0,
+                              transition: {
+                                type: "spring",
+                                stiffness: 400,
+                                damping: 25,
+                                delay: 0.3
+                              }
+                            }}
+                            exit={{ 
+                              opacity: 0, 
+                              x: -3, 
+                              transition: { 
+                                duration: 0.1,
+                                ease: "easeIn"
+                              }
+                            }}
+                          >
+                            <Calendar className="w-5 h-5 text-[#6c63ff] mr-4 mt-0.5" />
+                            <div>
+                              <p className="text-sm font-medium text-gray-700">
+                                Date & Time
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                Today at {selectedEvent.time}
+                              </p>
+                            </div>
+                          </motion.div>
+
+                          <motion.div 
+                            className="flex items-start"
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ 
+                              opacity: 1, 
+                              x: 0,
+                              transition: {
+                                type: "spring",
+                                stiffness: 400,
+                                damping: 25,
+                                delay: 0.4
+                              }
+                            }}
+                            exit={{ 
+                              opacity: 0, 
+                              x: -3, 
+                              transition: { 
+                                duration: 0.1,
+                                ease: "easeIn"
+                              }
+                            }}
+                          >
+                            <Clock className="w-5 h-5 text-[#6c63ff] mr-4 mt-0.5" />
+                            <div>
+                              <p className="text-sm font-medium text-gray-700">
+                                Duration
+                              </p>
+                              <p className="text-sm text-gray-500">1 hour</p>
+                            </div>
+                          </motion.div>
+                        </div>
+                      </motion.div>
                     </motion.div>
                   </motion.div>
-                </div>
+                </motion.div>
               </motion.div>
-              <DialogClose className="absolute right-5 top-5 z-30 rounded-full bg-black/20 p-2 text-white hover:bg-black/30 transition-colors duration-200 focus:outline-none">
-                <X className="h-5 w-5" />
-                <span className="sr-only">Close</span>
-              </DialogClose>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ 
+                  opacity: 1, 
+                  scale: 1,
+                  transition: { 
+                    delay: 0.2, 
+                    duration: 0.2,
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 20
+                  }
+                }}
+                exit={{ 
+                  opacity: 0, 
+                  scale: 0.8,
+                  transition: { 
+                    duration: 0.15,
+                    ease: "easeInOut"
+                  }
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="absolute right-5 top-5 z-30"
+              >
+                <DialogClose className="rounded-full bg-black/20 p-2 text-white hover:bg-black/30 transition-colors duration-200 focus:outline-none">
+                  <X className="h-5 w-5" />
+                  <span className="sr-only">Close</span>
+                </DialogClose>
+              </motion.div>
             </DialogContent>
           )}
         </AnimatePresence>
