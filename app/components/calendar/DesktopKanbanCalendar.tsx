@@ -214,8 +214,8 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
       {/* Weekly calendar grid */}
       <div className="flex-1 bg-white overflow-hidden">
         {isDragging && (
-          <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-center bg-black/5">
-            <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 pointer-events-none z-10">
+            <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
               <MoveHorizontal className="w-5 h-5 text-blue-500" />
               <span className="text-sm font-medium text-gray-700">Drag to another day</span>
             </div>
@@ -256,37 +256,7 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
                 
                 {/* Drop destination indicator */}
                 {isDragging && isActiveDropTarget && !isSourceColumn && draggedEvent && (
-                  <>
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
-                      <div className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 animate-drop-pulse">
-                        <ArrowRight className="w-5 h-5" />
-                        <span className="font-medium">Drop Here</span>
-                      </div>
-                    </div>
-                    
-                    {/* Ghost card in target location - positioned based on time */}
-                    <div 
-                      className="absolute left-1/2 z-15 pointer-events-none w-[90%] max-w-[300px]"
-                      style={getGhostCardPosition(dateKey, draggedEvent.event)}
-                    >
-                      <div className="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-blue-400">
-                        <div className="relative w-full h-[160px] overflow-hidden rounded-t-xl">
-                          <div className="absolute inset-0 bg-blue-50"></div>
-                          <div className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10">
-                            {draggedEvent.event.time}
-                          </div>
-                        </div>
-                        <div className="p-5 flex flex-col">
-                          <h3 className="text-lg font-semibold text-[#222222] mb-2">
-                            {draggedEvent.event.title}
-                          </h3>
-                          <p className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2">
-                            {draggedEvent.event.description}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </>
+                  null
                 )}
                 
                 {/* Source column indicator */}
@@ -315,12 +285,38 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
                 <div className="flex-1 p-3 overflow-y-auto">
                   {dayEvents.length === 0 ? (
                     <div className={cn(
-                      "text-center py-6 text-gray-400 text-sm",
-                      isActiveDropTarget && isDragging ? "bg-blue-50/50 rounded-lg p-4" : ""
+                      "text-gray-400 text-sm space-y-4 relative",
+                      isActiveDropTarget && isDragging ? "bg-blue-50/30" : ""
                     )}>
-                      <p>No events</p>
-                      {isActiveDropTarget && isDragging && (
-                        <p className="mt-2 text-blue-500 font-medium">Drop to add event</p>
+                      <p className="text-center py-2">No events</p>
+                      {isActiveDropTarget && isDragging && !isSourceColumn && draggedEvent && (
+                        <div className="event-wrapper">
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="mb-4 mx-auto max-w-[300px] w-full"
+                          >
+                            <div className="bg-blue-50 border-2 border-blue-400 rounded-xl shadow-lg overflow-hidden">
+                              <div className="relative w-full h-[160px] overflow-hidden rounded-t-xl">
+                                <div className="absolute inset-0 bg-blue-50"></div>
+                                <div className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10">
+                                  {draggedEvent.event.time}
+                                </div>
+                              </div>
+                              <div className="p-5 flex flex-col">
+                                <h3 className="text-lg font-semibold text-[#222222] mb-2">
+                                  {draggedEvent.event.title}
+                                </h3>
+                                <p className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2">
+                                  {draggedEvent.event.description}
+                                </p>
+                              </div>
+                            </div>
+                          </motion.div>
+                          <p className="text-blue-500 font-medium text-center">Drop to add event</p>
+                        </div>
                       )}
                     </div>
                   ) : (
@@ -329,7 +325,7 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
                       {isDragging && isActiveDropTarget && !isSourceColumn && draggedEvent && (() => {
                         const position = getGhostCardPosition(dateKey, draggedEvent.event);
                         return (
-                          <>
+                          <div className="relative">
                             {position.isFirst && (
                               <div className="absolute top-0 left-0 right-0 h-1 bg-blue-500 rounded-full z-30 -mt-1"></div>
                             )}
@@ -347,39 +343,114 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
                                 <div className="absolute -ml-1 w-3 h-3 rounded-full bg-blue-500"></div>
                               </div>
                             )}
-                          </>
+                          </div>
                         );
                       })()}
                       
-                      <AnimatePresence mode="popLayout">
-                        {dayEvents.map((event, index) => (
-                          <motion.div
-                            key={event.id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            transition={{ 
-                              duration: 0.2, 
-                              delay: 0.05 + (index * 0.03),
-                              ease: "easeOut"
-                            }}
-                          >
-                            <DraggableEventCard
-                              event={event}
-                              onDragStart={() => handleEventDragStart(event, dateKey)}
-                              onDragEnd={handleEventDragEnd}
-                              isOpen={isEventOpen && selectedEvent?.id === event.id}
-                              onOpenChange={(open) => {
-                                setIsEventOpen(open);
-                                if (open) {
-                                  setSelectedEvent(event);
-                                } else {
-                                  setSelectedEvent(null);
-                                }
-                              }}
-                            />
-                          </motion.div>
-                        ))}
+                      <AnimatePresence mode="wait">
+                        {dayEvents.map((event, index) => {
+                          // Calculate if we need to insert the ghost card before this event
+                          const shouldInsertGhostBefore = 
+                            isDragging && 
+                            isActiveDropTarget && 
+                            !isSourceColumn && 
+                            draggedEvent && 
+                            getGhostCardPosition(dateKey, draggedEvent.event).insertIndex === index;
+                          
+                          // Calculate if this is the last event and we need to insert ghost after
+                          const isLastEvent = index === dayEvents.length - 1;
+                          const shouldInsertGhostAfter = 
+                            isDragging && 
+                            isActiveDropTarget && 
+                            !isSourceColumn && 
+                            draggedEvent && 
+                            isLastEvent &&
+                            getGhostCardPosition(dateKey, draggedEvent.event).insertIndex === dayEvents.length;
+                          
+                          return (
+                            <div key={event.id} className="event-wrapper">
+                              {shouldInsertGhostBefore && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: 'auto' }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  transition={{ duration: 0.2 }}
+                                  className="mb-4 mx-auto max-w-[300px] w-full"
+                                >
+                                  <div className="bg-blue-50 border-2 border-blue-400 rounded-xl shadow-lg overflow-hidden">
+                                    <div className="relative w-full h-[160px] overflow-hidden rounded-t-xl">
+                                      <div className="absolute inset-0 bg-blue-50"></div>
+                                      <div className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10">
+                                        {draggedEvent.event.time}
+                                      </div>
+                                    </div>
+                                    <div className="p-5 flex flex-col">
+                                      <h3 className="text-lg font-semibold text-[#222222] mb-2">
+                                        {draggedEvent.event.title}
+                                      </h3>
+                                      <p className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2">
+                                        {draggedEvent.event.description}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </motion.div>
+                              )}
+                              
+                              <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                transition={{ 
+                                  duration: 0.2, 
+                                  delay: 0.05 + (index * 0.03),
+                                  ease: "easeOut"
+                                }}
+                              >
+                                <DraggableEventCard
+                                  event={event}
+                                  onDragStart={() => handleEventDragStart(event, dateKey)}
+                                  onDragEnd={handleEventDragEnd}
+                                  isOpen={isEventOpen && selectedEvent?.id === event.id}
+                                  onOpenChange={(open) => {
+                                    setIsEventOpen(open);
+                                    if (open) {
+                                      setSelectedEvent(event);
+                                    } else {
+                                      setSelectedEvent(null);
+                                    }
+                                  }}
+                                />
+                              </motion.div>
+                              
+                              {shouldInsertGhostAfter && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: 'auto' }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  transition={{ duration: 0.2 }}
+                                  className="mt-4 mx-auto max-w-[300px] w-full"
+                                >
+                                  <div className="bg-blue-50 border-2 border-blue-400 rounded-xl shadow-lg overflow-hidden">
+                                    <div className="relative w-full h-[160px] overflow-hidden rounded-t-xl">
+                                      <div className="absolute inset-0 bg-blue-50"></div>
+                                      <div className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10">
+                                        {draggedEvent.event.time}
+                                      </div>
+                                    </div>
+                                    <div className="p-5 flex flex-col">
+                                      <h3 className="text-lg font-semibold text-[#222222] mb-2">
+                                        {draggedEvent.event.title}
+                                      </h3>
+                                      <p className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2">
+                                        {draggedEvent.event.description}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </motion.div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </AnimatePresence>
                     </div>
                   )}

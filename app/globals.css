@@ -192,38 +192,6 @@ body {
     transform: scale(1.02) !important;
   }
   
-  /* Drag handle indicator */
-  .drag-handle {
-    position: absolute;
-    top: 50%;
-    right: -8px;
-    width: 16px;
-    height: 40px;
-    border-radius: 8px;
-    background-color: rgba(59, 130, 246, 0.2);
-    transform: translateY(-50%);
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-    pointer-events: none;
-    z-index: 20;
-  }
-  
-  .drag-handle::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 4px;
-    height: 20px;
-    border-radius: 2px;
-    background-color: rgba(59, 130, 246, 0.6);
-    transform: translate(-50%, -50%);
-  }
-  
-  *:hover > .drag-handle {
-    opacity: 1;
-  }
-  
   /* Drop animation */
   @keyframes drop-pulse {
     0% {

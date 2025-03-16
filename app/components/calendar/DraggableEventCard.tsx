@@ -247,9 +247,6 @@ export function DraggableEventCard({
           transition={sharedTransition}
           className="touch-none select-none relative"
         >
-          {/* Drag handle indicator */}
-          <div className="drag-handle animate-slide-hint"></div>
-          
           <Card 
             className="mb-5 cursor-grab active:cursor-grabbing hover:shadow-md transition-all overflow-hidden rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.1)]"
             onClick={handleCardClick}

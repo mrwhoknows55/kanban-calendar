@@ -241,37 +241,6 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
                   {format(nextDate, "MMM d")}
                 </div>
               </div>
-              
-              {/* Enhanced drop indicators */}
-              {dragDirection !== null && (
-                <>
-                  {/* Left drop indicator */}
-                  <div 
-                    className={cn(
-                      "absolute left-8 top-1/2 transform -translate-y-1/2 pointer-events-none z-20 transition-opacity duration-300",
-                      dragDirection === 1 ? "opacity-100" : "opacity-0"
-                    )}
-                  >
-                    <div className="bg-blue-500 text-white px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5 animate-drop-pulse">
-                      <ArrowRight className="w-4 h-4 transform rotate-180" />
-                      <span className="text-sm font-medium">Drop</span>
-                    </div>
-                  </div>
-                  
-                  {/* Right drop indicator */}
-                  <div 
-                    className={cn(
-                      "absolute right-8 top-1/2 transform -translate-y-1/2 pointer-events-none z-20 transition-opacity duration-300",
-                      dragDirection === -1 ? "opacity-100" : "opacity-0"
-                    )}
-                  >
-                    <div className="bg-blue-500 text-white px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5 animate-drop-pulse">
-                      <ArrowRight className="w-4 h-4" />
-                      <span className="text-sm font-medium">Drop</span>
-                    </div>
-                  </div>
-                </>
-              )}
             </>
           )}
           
