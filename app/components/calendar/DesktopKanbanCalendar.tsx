@@ -123,27 +123,26 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
     if (insertIndex === 0) {
       // Position at the top
       return { 
-        top: "20%", 
+        top: "0", 
         transform: "translate(-50%, 0)",
         insertIndex,
         isFirst: true,
         isLast: false
       };
     } else if (insertIndex === dayEvents.length) {
-      // Position at the bottom
+      // Position at the bottom - exactly below the last card
       return { 
-        top: "80%", 
-        transform: "translate(-50%, -100%)",
+        top: `${insertIndex * 84}px`, 
+        transform: "translate(-50%, 0)",
         insertIndex,
         isFirst: false,
         isLast: true
       };
     } else {
-      // Position between events
-      const percentage = (insertIndex / dayEvents.length) * 60 + 20; // 20% to 80% range
+      // Position between events - exactly at the insertion point
       return { 
-        top: `${percentage}%`, 
-        transform: "translate(-50%, -50%)",
+        top: `${insertIndex * 84}px`, 
+        transform: "translate(-50%, 0)",
         insertIndex,
         isFirst: false,
         isLast: false
@@ -336,14 +335,14 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
                             )}
                             {!position.isFirst && !position.isLast && (
                               <div className="absolute left-0 right-0 z-30 flex items-center justify-center" 
-                                style={{ top: `${(position.insertIndex * 84) - 10}px` }}>
+                                style={{ top: `${position.insertIndex * 84 - 2}px` }}>
                                 <div className="w-3/4 h-1 bg-blue-500 rounded-full"></div>
                                 <div className="absolute -ml-1 w-3 h-3 rounded-full bg-blue-500"></div>
                               </div>
                             )}
                             {position.isLast && (
                               <div className="absolute left-0 right-0 z-30 flex items-center justify-center" 
-                                style={{ top: `${(dayEvents.length * 84) - 10}px` }}>
+                                style={{ top: `${position.insertIndex * 84 - 2}px` }}>
                                 <div className="w-3/4 h-1 bg-blue-500 rounded-full"></div>
                                 <div className="absolute -ml-1 w-3 h-3 rounded-full bg-blue-500"></div>
                               </div>

@@ -225,7 +225,14 @@ export function DraggableEventCard({
           dragElastic={0.1} // Reduce elasticity to keep card more rigid
           dragTransition={{ 
             bounceStiffness: 600, 
-            bounceDamping: 30 
+            bounceDamping: 30,
+            power: 0,
+            timeConstant: 0,
+            restDelta: 0.001,
+            modifyTarget: (target) => {
+              // Always return to original position
+              return 0;
+            }
           }}
           style={{ x, rotate, scale }}
           onDragStart={handleDragStart}
