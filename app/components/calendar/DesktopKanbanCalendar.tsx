@@ -185,7 +185,7 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
   return (
     <div className="flex flex-col w-full h-screen overflow-hidden" ref={calendarRef}>
       {/* Week header */}
-      <div className="bg-gradient-header text-white p-6">
+      <div className="bg-gradient-header text-white p-6 sticky top-0 z-20">
         <h1 className="text-2xl font-bold mb-4 tracking-tight">Your Schedule</h1>
         
         <div className="flex items-center justify-between mb-4">
@@ -212,9 +212,9 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
       </div>
       
       {/* Weekly calendar grid */}
-      <div className="flex-1 bg-white overflow-hidden">
+      <div className="flex-1 bg-white overflow-y-auto">
         {isDragging && (
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 pointer-events-none z-10">
+          <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 pointer-events-none z-30">
             <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
               <MoveHorizontal className="w-5 h-5 text-blue-500" />
               <span className="text-sm font-medium text-gray-700">Drag to another day</span>
@@ -266,7 +266,7 @@ export function DesktopKanbanCalendar({ initialDate, events: initialEvents }: De
                 
                 {/* Day header */}
                 <div className={cn(
-                  "p-3 text-center border-b border-gray-100 sticky top-0 z-10",
+                  "p-3 text-center border-b border-gray-100 sticky top-0 z-10 shadow-sm",
                   isToday(date) ? "bg-blue-100/50" : "bg-gray-50",
                   isActiveDropTarget && isDragging ? "bg-blue-100" : ""
                 )}>
