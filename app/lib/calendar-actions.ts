@@ -8,14 +8,14 @@ import { format, parse } from "date-fns";
  */
 export async function setSelectedDate(date: Date) {
   const cookieStore = await cookies();
-  const dateString = format(date, 'yyyy-MM-dd');
-  
+  const dateString = format(date, "yyyy-MM-dd");
+
   // Set the cookie with a 7-day expiration
-  cookieStore.set('selectedDate', dateString, {
+  cookieStore.set("selectedDate", dateString, {
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    path: '/',
+    path: "/",
   });
-  
+
   return { success: true };
 }
 
@@ -24,13 +24,13 @@ export async function setSelectedDate(date: Date) {
  */
 export async function getSelectedDate(): Promise<Date> {
   const cookieStore = await cookies();
-  const selectedDateCookie = cookieStore.get('selectedDate');
-  
+  const selectedDateCookie = cookieStore.get("selectedDate");
+
   if (selectedDateCookie?.value) {
     // Parse the date from the cookie
-    return parse(selectedDateCookie.value, 'yyyy-MM-dd', new Date());
+    return parse(selectedDateCookie.value, "yyyy-MM-dd", new Date());
   }
-  
+
   // Default to today if no cookie exists
   return new Date();
-} 
+}

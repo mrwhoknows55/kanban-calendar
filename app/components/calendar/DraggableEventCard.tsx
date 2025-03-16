@@ -8,15 +8,18 @@ import {
   Dialog,
   DialogContent as BaseDialogContent,
   DialogDescription,
-  DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogClose,
   DialogPortal,
   DialogOverlay,
 } from "@/app/components/ui/dialog";
-import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
-import { X, Clock, Calendar, ArrowLeft } from "lucide-react";
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  AnimatePresence,
+} from "framer-motion";
+import { X, Clock, Calendar } from "lucide-react";
 import { Root as VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { cn } from "@/app/lib/utils";
 import { useDragStore } from "@/app/lib/gesture-utils";
@@ -54,83 +57,82 @@ const DialogContent = React.forwardRef<
 ));
 DialogContent.displayName = "DialogContent";
 
-export function DraggableEventCard({ 
-  event, 
+export function DraggableEventCard({
+  event,
   onDragEnd,
   onDragStart,
   isOpen = false,
-  onOpenChange
+  onOpenChange,
 }: DraggableEventCardProps) {
   const [imageError, setImageError] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragDistance, setDragDistance] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
-  
+
   // Use the global drag store
   const { startDrag, endDrag, canOpenCard } = useDragStore();
-  
+
   const fallbackImage =
     "https://fastly.picsum.photos/id/312/1920/1080.jpg?hmac=OD_fP9MUQN7uJ8NBR7tlii78qwHPUROGgohG4w16Kjw";
 
   // Motion values for drag
   const x = useMotionValue(0);
-  const dragThreshold = 50; // Lower threshold to make dragging more responsive
-  
+
   // Transform x motion value to card rotation and scale
   const rotate = useTransform(x, [-200, 0, 200], [-5, 0, 5]);
   const scale = useTransform(
-    x, 
-    [-200, -100, 0, 100, 200], 
-    [0.95, 0.97, 1, 0.97, 0.95]
+    x,
+    [-200, -100, 0, 100, 200],
+    [0.95, 0.97, 1, 0.97, 0.95],
   );
-  
+
   // Track drag distance for determining if it was a click or drag
   const handleDrag = () => {
     setDragDistance(Math.abs(x.get()));
   };
-  
+
   // Handle drag start
   const handleDragStart = () => {
     setIsDragging(true);
     setDragDistance(0);
-    
+
     // Add dragging class to body for global cursor changes
-    document.body.classList.add('dragging');
-    
+    document.body.classList.add("dragging");
+
     // Update global drag state
     startDrag();
-    
+
     // Call the onDragStart callback if provided
     if (onDragStart) {
       onDragStart();
     }
   };
-  
+
   // Handle drag end
   const handleDragEnd = () => {
     const xOffset = x.get();
     const wasDragged = dragDistance > 10;
-    
+
     setIsDragging(false);
-    
+
     // Remove dragging class from body
-    document.body.classList.remove('dragging');
-    
+    document.body.classList.remove("dragging");
+
     // Update global drag state
     endDrag();
-    
+
     // Only call the drag end callback if it was actually dragged
     if (wasDragged && onDragEnd) {
       const direction = xOffset > 0 ? 1 : -1;
       onDragEnd(event, direction);
     }
-    
+
     // Reset position
     x.set(0);
   };
 
   // Handle card click - completely separate from drag handling
-  const handleCardClick = (e: React.MouseEvent) => {
+  const handleCardClick = () => {
     // Only treat as a click if:
     // 1. Not currently dragging
     // 2. Drag distance is minimal
@@ -147,81 +149,70 @@ export function DraggableEventCard({
     damping: 25,
     stiffness: 400,
     mass: 0.6,
-    velocity: 2
-  };
-
-  // Enhanced transition for image container
-  const imageTransition = {
-    type: "spring",
-    damping: 22,
-    stiffness: 350,
-    mass: 0.6,
-    restDelta: 0.001,
-    restSpeed: 0.001,
-    velocity: 2
+    velocity: 2,
   };
 
   // Content animation variants
   const contentVariants = {
-    hidden: { 
-      y: 20, 
-      opacity: 0 
-    },
-    visible: { 
-      y: 0, 
-      opacity: 1,
-      transition: { 
-        delay: 0.1, 
-        duration: 0.2 
-      }
-    },
-    exit: { 
-      y: 20, 
+    hidden: {
+      y: 20,
       opacity: 0,
-      transition: { 
-        duration: 0.15 
-      }
-    }
+    },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        delay: 0.1,
+        duration: 0.2,
+      },
+    },
+    exit: {
+      y: 20,
+      opacity: 0,
+      transition: {
+        duration: 0.15,
+      },
+    },
   };
 
   // Details animation variants
   const detailsVariants = {
-    hidden: { 
-      opacity: 0 
-    },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        delay: 0.15, 
-        duration: 0.2 
-      }
-    },
-    exit: { 
+    hidden: {
       opacity: 0,
-      transition: { 
-        duration: 0.1 
-      }
-    }
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        delay: 0.15,
+        duration: 0.2,
+      },
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        duration: 0.1,
+      },
+    },
   };
 
   // Dialog animation variants
   const dialogVariants = {
-    hidden: { 
-      opacity: 0 
-    },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        duration: 0.15 
-      }
-    },
-    exit: { 
+    hidden: {
       opacity: 0,
-      transition: { 
+    },
+    visible: {
+      opacity: 1,
+      transition: {
         duration: 0.15,
-        delay: 0.05 // Slight delay to allow child animations to start first
-      }
-    }
+      },
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        duration: 0.15,
+        delay: 0.05, // Slight delay to allow child animations to start first
+      },
+    },
   };
 
   return (
@@ -231,32 +222,33 @@ export function DraggableEventCard({
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.1} // Reduce elasticity to keep card more rigid
-        dragTransition={{ 
-          bounceStiffness: 600, 
+        dragTransition={{
+          bounceStiffness: 600,
           bounceDamping: 30,
           power: 0,
           timeConstant: 0,
           restDelta: 0.001,
           modifyTarget: (target) => {
             // Always return to original position
+            console.debug("modifyTarget:", target);
             return 0;
-          }
+          },
         }}
         style={{ x, rotate, scale }}
         onDragStart={handleDragStart}
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
         whileTap={{ scale: 0.98 }}
-        whileDrag={{ 
+        whileDrag={{
           zIndex: 50,
           boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
           cursor: "grabbing",
-          opacity: 0.7
+          opacity: 0.7,
         }}
         transition={sharedTransition}
         className="touch-none select-none relative"
       >
-        <Card 
+        <Card
           className="mb-5 cursor-grab active:cursor-grabbing hover:shadow-md transition-all overflow-hidden rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.1)]"
           onClick={handleCardClick}
         >
@@ -271,23 +263,15 @@ export function DraggableEventCard({
               onError={() => setImageError(true)}
               draggable={false}
             />
-            <div 
-              className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10"
-            >
+            <div className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10">
               {event.time}
             </div>
           </div>
-          <div 
-            className="p-5 flex flex-col"
-          >
-            <h3 
-              className="text-lg font-semibold text-[#222222] mb-2"
-            >
+          <div className="p-5 flex flex-col">
+            <h3 className="text-lg font-semibold text-[#222222] mb-2">
               {event.title}
             </h3>
-            <p 
-              className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2"
-            >
+            <p className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2">
               {event.description}
             </p>
           </div>
@@ -309,9 +293,7 @@ export function DraggableEventCard({
               className="flex flex-col h-full bg-white"
             >
               {/* Cover image section */}
-              <div 
-                className="relative w-full h-[40vh] sm:h-[280px] overflow-hidden"
-              >
+              <div className="relative w-full h-[40vh] sm:h-[280px] overflow-hidden">
                 <Image
                   src={imageError ? fallbackImage : event.imageUrl}
                   alt={event.title}
@@ -322,23 +304,17 @@ export function DraggableEventCard({
                   onError={() => setImageError(true)}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                
+
                 {/* Header content overlay */}
                 <div className="absolute bottom-0 left-0 p-8 text-white w-full">
                   <div className="flex items-center justify-between mb-2">
-                    <h2 
-                      className="text-2xl font-bold"
-                    >
-                      {event.title}
-                    </h2>
-                    
-                    <div 
-                      className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-white"
-                    >
+                    <h2 className="text-2xl font-bold">{event.title}</h2>
+
+                    <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-white">
                       {event.time}
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-2 opacity-80" />
                     <span className="text-sm text-white/90">Today</span>
@@ -348,7 +324,7 @@ export function DraggableEventCard({
 
               {/* Content section */}
               <div className="flex-1 overflow-y-auto bg-gradient-background">
-                <motion.div 
+                <motion.div
                   className="p-8"
                   variants={contentVariants}
                   initial="hidden"
@@ -356,36 +332,44 @@ export function DraggableEventCard({
                   exit="exit"
                 >
                   <div className="mb-8">
-                    <h3 className="text-xl font-semibold text-gray-800 mb-4">Description</h3>
-                    <p 
-                      className="text-gray-600 leading-relaxed text-base"
-                    >
+                    <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                      Description
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed text-base">
                       {event.description}
                     </p>
                   </div>
-                  
-                  <motion.div 
+
+                  <motion.div
                     className="border-t border-gray-200 pt-6"
                     variants={detailsVariants}
                     initial="hidden"
                     animate="visible"
                     exit="exit"
                   >
-                    <h3 className="text-sm font-medium text-gray-500 mb-4">Event Details</h3>
-                    
+                    <h3 className="text-sm font-medium text-gray-500 mb-4">
+                      Event Details
+                    </h3>
+
                     <div className="space-y-4">
                       <div className="flex items-start">
                         <Calendar className="w-5 h-5 text-[#6c63ff] mr-4 mt-0.5" />
                         <div>
-                          <p className="text-sm font-medium text-gray-700">Date & Time</p>
-                          <p className="text-sm text-gray-500">Today at {event.time}</p>
+                          <p className="text-sm font-medium text-gray-700">
+                            Date & Time
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Today at {event.time}
+                          </p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-start">
                         <Clock className="w-5 h-5 text-[#6c63ff] mr-4 mt-0.5" />
                         <div>
-                          <p className="text-sm font-medium text-gray-700">Duration</p>
+                          <p className="text-sm font-medium text-gray-700">
+                            Duration
+                          </p>
                           <p className="text-sm text-gray-500">1 hour</p>
                         </div>
                       </div>
@@ -399,4 +383,4 @@ export function DraggableEventCard({
       </AnimatePresence>
     </Dialog>
   );
-} 
+}

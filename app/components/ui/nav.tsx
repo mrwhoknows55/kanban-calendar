@@ -8,7 +8,7 @@ import { Calendar, Home } from "lucide-react";
 
 export function MainNav() {
   const pathname = usePathname();
-  
+
   const navItems = [
     {
       name: "Home",
@@ -21,7 +21,7 @@ export function MainNav() {
       icon: <Calendar className="w-5 h-5" />,
     },
   ];
-  
+
   return (
     <nav className="flex items-center space-x-4 lg:space-x-6">
       {navItems.map((item) => (
@@ -30,9 +30,7 @@ export function MainNav() {
           href={item.href}
           className={cn(
             "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
-            pathname === item.href
-              ? "text-primary"
-              : "text-muted-foreground"
+            pathname === item.href ? "text-primary" : "text-muted-foreground",
           )}
         >
           {item.icon}
@@ -41,4 +39,4 @@ export function MainNav() {
       ))}
     </nav>
   );
-} 
+}
