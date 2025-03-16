@@ -1,16 +1,28 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { format, addDays, subDays, startOfWeek, endOfWeek, isSameWeek, isToday } from "date-fns";
+import React, { useState } from "react";
+import {
+  format,
+  addDays,
+  subDays,
+  startOfWeek,
+  isSameWeek,
+  isToday,
+} from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
-import { DraggableEventCard } from "./DraggableEventCard";
 import { type Event } from "@/app/lib/calendar-data";
 import { cn, formatDate } from "@/app/lib/utils";
 import { useSwipe } from "@/app/lib/gesture-utils";
-import { ChevronLeft, ChevronRight, MoveHorizontal, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCalendarEvents } from "@/app/lib/calendar-hooks";
 import { Card } from "@/app/components/ui/card";
-import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/app/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/app/components/ui/dialog";
 import { Calendar, Clock } from "lucide-react";
 import { X } from "lucide-react";
 import { Root as VisuallyHidden } from "@radix-ui/react-visually-hidden";
@@ -21,67 +33,75 @@ interface MobileKanbanCalendarProps {
   events: Record<string, Event[]>;
 }
 
-export function MobileKanbanCalendar({ initialDate, events: initialEvents }: MobileKanbanCalendarProps) {
+export function MobileKanbanCalendar({
+  events: initialEvents,
+}: MobileKanbanCalendarProps) {
   // Always use today as the initial date
   const today = new Date();
-  
+
   const [currentDate, setCurrentDate] = useState<Date>(today);
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
-    startOfWeek(today, { weekStartsOn: 1 })
+    startOfWeek(today, { weekStartsOn: 1 }),
   );
   const [direction, setDirection] = useState<number>(0);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isEventOpen, setIsEventOpen] = useState<boolean>(false);
-  
+
   // Use our custom hook for managing events
-  const { events, moveEvent } = useCalendarEvents({ initialEvents });
-  
+  const { events } = useCalendarEvents({ initialEvents });
+
   // Format the current date as a string key for the events object
   const currentDateKey = format(currentDate, "yyyy-MM-dd");
-  
+
   // Get events for the current date
   const currentEvents = events[currentDateKey] || [];
-  
+
   // Handle swipe to change date
   const handleSwipe = (direction: number) => {
     setDirection(direction);
-    
-    const newDate = direction > 0
-      ? subDays(currentDate, 1) // Swipe right - go to previous day
-      : addDays(currentDate, 1); // Swipe left - go to next day
-    
+
+    const newDate =
+      direction > 0
+        ? subDays(currentDate, 1) // Swipe right - go to previous day
+        : addDays(currentDate, 1); // Swipe left - go to next day
+
     setCurrentDate(newDate);
-    
+
     // Check if we need to update the week
     if (!isSameWeek(newDate, currentWeekStart, { weekStartsOn: 1 })) {
       setCurrentWeekStart(startOfWeek(newDate, { weekStartsOn: 1 }));
     }
   };
-  
+
   // Handle week navigation
   const handleWeekChange = (direction: number) => {
-    const newWeekStart = direction > 0
-      ? subDays(currentWeekStart, 7) // Previous week
-      : addDays(currentWeekStart, 7); // Next week
-    
+    const newWeekStart =
+      direction > 0
+        ? subDays(currentWeekStart, 7) // Previous week
+        : addDays(currentWeekStart, 7); // Next week
+
     setCurrentWeekStart(newWeekStart);
-    
+
     // Also update the current date to the same day in the new week
-    const dayOfWeek = (currentDate.getDay() === 0 ? 7 : currentDate.getDay()) - 1;
+    const dayOfWeek =
+      (currentDate.getDay() === 0 ? 7 : currentDate.getDay()) - 1;
     const newDate = addDays(newWeekStart, dayOfWeek);
     setCurrentDate(newDate);
     setDirection(direction);
   };
-  
+
   // Set up swipe handlers
-  useSwipe({
-    onSwipeLeft: () => handleSwipe(-1),
-    onSwipeRight: () => handleSwipe(1),
-  }, {
-    threshold: 50,
-    preventDefault: false,
-  });
-  
+  useSwipe(
+    {
+      onSwipeLeft: () => handleSwipe(-1),
+      onSwipeRight: () => handleSwipe(1),
+    },
+    {
+      threshold: 50,
+      preventDefault: false,
+    },
+  );
+
   // Generate dates for the week view based on currentWeekStart
   const generateWeekDates = () => {
     const dates = [];
@@ -90,33 +110,32 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
     }
     return dates;
   };
-  
+
   const weekDates = generateWeekDates();
-  
-  // Get previous and next dates for indicators
-  const prevDate = subDays(currentDate, 1);
-  const nextDate = addDays(currentDate, 1);
-  
+
   return (
     <div className="flex flex-col w-full h-screen overflow-hidden">
       {/* Week header */}
       <div className="bg-gradient-header text-white p-6">
-        <h1 className="text-2xl font-bold mb-4 tracking-tight">Your Schedule</h1>
-        
+        <h1 className="text-2xl font-bold mb-4 tracking-tight">
+          Your Schedule
+        </h1>
+
         <div className="flex items-center justify-between mb-4">
-          <button 
+          <button
             onClick={() => handleWeekChange(1)}
             className="p-2 rounded-full hover:bg-white/10 transition-colors duration-200"
             aria-label="Previous week"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          
+
           <h2 className="text-lg font-semibold">
-            {formatDate(currentWeekStart, "MMM d")} - {formatDate(addDays(currentWeekStart, 6), "MMM d, yyyy")}
+            {formatDate(currentWeekStart, "MMM d")} -{" "}
+            {formatDate(addDays(currentWeekStart, 6), "MMM d, yyyy")}
           </h2>
-          
-          <button 
+
+          <button
             onClick={() => handleWeekChange(-1)}
             className="p-2 rounded-full hover:bg-white/10 transition-colors duration-200"
             aria-label="Next week"
@@ -124,7 +143,7 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
-        
+
         <div className="flex justify-between w-full px-2 py-3 overflow-hidden">
           {weekDates.map((date) => (
             <motion.button
@@ -136,7 +155,7 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
                   : "bg-white/5 text-white",
                 isToday(date) && format(date, "yyyy-MM-dd") !== currentDateKey
                   ? "ring-1 ring-white/30"
-                  : ""
+                  : "",
               )}
               onClick={() => {
                 const newDirection = date > currentDate ? -1 : 1;
@@ -149,13 +168,15 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
               aria-label={formatDate(date, "EEEE, MMMM d")}
               aria-selected={format(date, "yyyy-MM-dd") === currentDateKey}
             >
-              <span className="text-xs font-medium">{format(date, "EEE").substring(0, 1)}</span>
+              <span className="text-xs font-medium">
+                {format(date, "EEE").substring(0, 1)}
+              </span>
               <span className="text-sm font-bold">{format(date, "d")}</span>
             </motion.button>
           ))}
         </div>
       </div>
-      
+
       {/* Daily events with swipe animation */}
       <div className="flex-1 bg-white overflow-hidden flex flex-col">
         {/* Static date display with fading line on the right */}
@@ -167,37 +188,37 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
             <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent"></div>
           </div>
         </div>
-        
+
         {/* Animated content area */}
         <div className="flex-1 relative overflow-hidden">
           <AnimatePresence mode="sync" initial={false}>
             <motion.div
               key={currentDateKey}
               className="absolute inset-0 overflow-y-auto"
-              initial={{ 
+              initial={{
                 x: direction < 0 ? 200 : -200,
-                opacity: 0.5
+                opacity: 0.5,
               }}
-              animate={{ 
+              animate={{
                 x: 0,
-                opacity: 1 
+                opacity: 1,
               }}
-              exit={{ 
+              exit={{
                 x: direction < 0 ? -200 : 200,
                 opacity: 0,
-                zIndex: 0
+                zIndex: 0,
               }}
               transition={{
                 type: "spring",
                 stiffness: 500,
                 damping: 30,
                 mass: 0.5,
-                velocity: 4
+                velocity: 4,
               }}
             >
               <div className="p-6 pt-0">
                 {currentEvents.length === 0 ? (
-                  <motion.div 
+                  <motion.div
                     className="text-center py-10 text-gray-500"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -212,13 +233,13 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
                         key={event.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ 
-                          duration: 0.2, 
-                          delay: 0.05 + (index * 0.03),
-                          ease: "easeOut"
+                        transition={{
+                          duration: 0.2,
+                          delay: 0.05 + index * 0.03,
+                          ease: "easeOut",
                         }}
                       >
-                        <Card 
+                        <Card
                           className="mb-5 hover:shadow-md transition-all overflow-hidden rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.1)]"
                           onClick={() => {
                             setSelectedEvent(event);
@@ -233,29 +254,24 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
                               className="object-cover pointer-events-none"
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               priority
-                              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                              onError={(
+                                e: React.SyntheticEvent<HTMLImageElement>,
+                              ) => {
                                 // Fallback image on error
                                 const target = e.target as HTMLImageElement;
-                                target.src = "https://fastly.picsum.photos/id/312/1920/1080.jpg?hmac=OD_fP9MUQN7uJ8NBR7tlii78qwHPUROGgohG4w16Kjw";
+                                target.src =
+                                  "https://fastly.picsum.photos/id/312/1920/1080.jpg?hmac=OD_fP9MUQN7uJ8NBR7tlii78qwHPUROGgohG4w16Kjw";
                               }}
                             />
-                            <div 
-                              className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10"
-                            >
+                            <div className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10">
                               {event.time}
                             </div>
                           </div>
-                          <div 
-                            className="p-5 flex flex-col"
-                          >
-                            <h3 
-                              className="text-lg font-semibold text-[#222222] mb-2"
-                            >
+                          <div className="p-5 flex flex-col">
+                            <h3 className="text-lg font-semibold text-[#222222] mb-2">
                               {event.title}
                             </h3>
-                            <p 
-                              className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2"
-                            >
+                            <p className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2">
                               {event.description}
                             </p>
                           </div>
@@ -269,7 +285,7 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
           </AnimatePresence>
         </div>
       </div>
-      
+
       {/* Event details dialog */}
       <Dialog open={isEventOpen} onOpenChange={setIsEventOpen}>
         <AnimatePresence mode="wait">
@@ -277,7 +293,9 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
             <DialogContent className="p-0 overflow-hidden max-w-none w-full h-full sm:h-auto sm:max-w-[500px] sm:rounded-lg border-none">
               <VisuallyHidden>
                 <DialogTitle>{selectedEvent.title}</DialogTitle>
-                <DialogDescription>{selectedEvent.description}</DialogDescription>
+                <DialogDescription>
+                  {selectedEvent.description}
+                </DialogDescription>
               </VisuallyHidden>
               <motion.div
                 initial={{ opacity: 0 }}
@@ -287,9 +305,7 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
                 className="flex flex-col h-full bg-white"
               >
                 {/* Cover image section */}
-                <div 
-                  className="relative w-full h-[40vh] sm:h-[280px] overflow-hidden"
-                >
+                <div className="relative w-full h-[40vh] sm:h-[280px] overflow-hidden">
                   <Image
                     src={selectedEvent.imageUrl}
                     alt={selectedEvent.title}
@@ -300,27 +316,24 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
                     onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                       // Fallback image on error
                       const target = e.target as HTMLImageElement;
-                      target.src = "https://fastly.picsum.photos/id/312/1920/1080.jpg?hmac=OD_fP9MUQN7uJ8NBR7tlii78qwHPUROGgohG4w16Kjw";
+                      target.src =
+                        "https://fastly.picsum.photos/id/312/1920/1080.jpg?hmac=OD_fP9MUQN7uJ8NBR7tlii78qwHPUROGgohG4w16Kjw";
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  
+
                   {/* Header content overlay */}
                   <div className="absolute bottom-0 left-0 p-8 text-white w-full">
                     <div className="flex items-center justify-between mb-2">
-                      <h2 
-                        className="text-2xl font-bold"
-                      >
+                      <h2 className="text-2xl font-bold">
                         {selectedEvent.title}
                       </h2>
-                      
-                      <div 
-                        className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-white"
-                      >
+
+                      <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-white">
                         {selectedEvent.time}
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center">
                       <Calendar className="w-4 h-4 mr-2 opacity-80" />
                       <span className="text-sm text-white/90">Today</span>
@@ -330,42 +343,50 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
 
                 {/* Content section */}
                 <div className="flex-1 overflow-y-auto bg-gradient-background">
-                  <motion.div 
+                  <motion.div
                     className="p-8"
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.1, duration: 0.2 }}
                   >
                     <div className="mb-8">
-                      <h3 className="text-xl font-semibold text-gray-800 mb-4">Description</h3>
-                      <p 
-                        className="text-gray-600 leading-relaxed text-base"
-                      >
+                      <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                        Description
+                      </h3>
+                      <p className="text-gray-600 leading-relaxed text-base">
                         {selectedEvent.description}
                       </p>
                     </div>
-                    
-                    <motion.div 
+
+                    <motion.div
                       className="border-t border-gray-200 pt-6"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.15, duration: 0.2 }}
                     >
-                      <h3 className="text-sm font-medium text-gray-500 mb-4">Event Details</h3>
-                      
+                      <h3 className="text-sm font-medium text-gray-500 mb-4">
+                        Event Details
+                      </h3>
+
                       <div className="space-y-4">
                         <div className="flex items-start">
                           <Calendar className="w-5 h-5 text-[#6c63ff] mr-4 mt-0.5" />
                           <div>
-                            <p className="text-sm font-medium text-gray-700">Date & Time</p>
-                            <p className="text-sm text-gray-500">Today at {selectedEvent.time}</p>
+                            <p className="text-sm font-medium text-gray-700">
+                              Date & Time
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              Today at {selectedEvent.time}
+                            </p>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-start">
                           <Clock className="w-5 h-5 text-[#6c63ff] mr-4 mt-0.5" />
                           <div>
-                            <p className="text-sm font-medium text-gray-700">Duration</p>
+                            <p className="text-sm font-medium text-gray-700">
+                              Duration
+                            </p>
                             <p className="text-sm text-gray-500">1 hour</p>
                           </div>
                         </div>
@@ -384,4 +405,4 @@ export function MobileKanbanCalendar({ initialDate, events: initialEvents }: Mob
       </Dialog>
     </div>
   );
-} 
+}

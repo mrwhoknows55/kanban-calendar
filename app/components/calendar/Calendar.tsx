@@ -10,7 +10,7 @@ interface CalendarProps {
 
 export async function Calendar({ initialDate }: CalendarProps) {
   // Get the selected date from cookies if initialDate is not provided
-  const selectedDate = initialDate || await getSelectedDate();
+  const selectedDate = initialDate || (await getSelectedDate());
 
   return (
     <div className="flex flex-col w-full h-screen shadow-lg overflow-hidden sm:max-w-md sm:rounded-lg">

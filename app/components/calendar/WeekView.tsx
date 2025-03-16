@@ -68,7 +68,7 @@ export function WeekView({ selectedDate, onDateSelect }: WeekViewProps) {
         setIsUpdating(false);
         return;
       }
-      
+
       // Otherwise, use the server action (server-side)
       await setSelectedDate(date);
       // Refresh the page to get the updated data

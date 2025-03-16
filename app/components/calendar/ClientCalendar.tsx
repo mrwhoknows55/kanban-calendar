@@ -21,7 +21,7 @@ export function ClientCalendar({ initialDate }: ClientCalendarProps) {
     async function fetchEvents() {
       try {
         const eventsForDate = await getEventsForDate(selectedDate);
-        
+
         if (isMounted) {
           setEvents(eventsForDate);
           setIsLoading(false);
@@ -95,7 +95,10 @@ interface ClientDailyScheduleProps {
   events: Event[];
 }
 
-function ClientDailySchedule({ selectedDate, events }: ClientDailyScheduleProps) {
+function ClientDailySchedule({
+  selectedDate,
+  events,
+}: ClientDailyScheduleProps) {
   // Sort events by time
   const sortedEvents = [...events].sort((a, b) => a.time.localeCompare(b.time));
 
@@ -123,4 +126,4 @@ function ClientDailySchedule({ selectedDate, events }: ClientDailyScheduleProps)
 }
 
 // Import the EventCard component
-import { EventCard } from "@/app/components/calendar/EventCard"; 
+import { EventCard } from "@/app/components/calendar/EventCard";

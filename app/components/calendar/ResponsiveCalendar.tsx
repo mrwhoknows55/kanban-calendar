@@ -3,8 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { ClientCalendar } from "./ClientCalendar";
 import { MobileKanbanCalendar } from "./MobileKanbanCalendar";
-import { getEventDates, getEventsForDate, type Event } from "@/app/lib/calendar-data";
-import { format } from "date-fns";
+import {
+  getEventDates,
+  getEventsForDate,
+  type Event,
+} from "@/app/lib/calendar-data";
 
 // Define the useMediaQuery hook directly in this file to avoid import issues
 function useMediaQuery(query: string): boolean {
@@ -13,7 +16,7 @@ function useMediaQuery(query: string): boolean {
   useEffect(() => {
     // Create a media query list
     const mediaQuery = window.matchMedia(query);
-    
+
     // Set the initial value
     setMatches(mediaQuery.matches);
 
@@ -47,10 +50,10 @@ export function ResponsiveCalendar({ initialDate }: ResponsiveCalendarProps) {
   useEffect(() => {
     // Save the original overflow style
     const originalOverflow = document.body.style.overflow;
-    
+
     // Set overflow to hidden
-    document.body.style.overflow = 'hidden';
-    
+    document.body.style.overflow = "hidden";
+
     // Restore original overflow on cleanup
     return () => {
       document.body.style.overflow = originalOverflow;
@@ -60,28 +63,28 @@ export function ResponsiveCalendar({ initialDate }: ResponsiveCalendarProps) {
   // Fetch all events on component mount
   useEffect(() => {
     let isMounted = true;
-    
+
     async function fetchEvents() {
       try {
         // Get all dates with events
         const eventDates = await getEventDates();
-        
+
         // Create an object to store events by date
         const eventsByDate: Record<string, Event[]> = {};
-        
+
         // Fetch events for each date
         const eventsPromises = eventDates.map(async (dateString) => {
           const date = new Date(dateString);
           const eventsForDate = await getEventsForDate(date);
           return { dateString, eventsForDate };
         });
-        
+
         const results = await Promise.all(eventsPromises);
-        
+
         results.forEach(({ dateString, eventsForDate }) => {
           eventsByDate[dateString] = eventsForDate;
         });
-        
+
         if (isMounted) {
           setEvents(eventsByDate);
           setIsLoading(false);
@@ -93,9 +96,9 @@ export function ResponsiveCalendar({ initialDate }: ResponsiveCalendarProps) {
         }
       }
     }
-    
+
     fetchEvents();
-    
+
     return () => {
       isMounted = false;
     };
@@ -128,4 +131,4 @@ export function ResponsiveCalendar({ initialDate }: ResponsiveCalendarProps) {
       <ClientCalendar initialDate={initialDate} />
     </div>
   );
-} 
+}

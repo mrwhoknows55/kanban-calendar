@@ -16,7 +16,10 @@ interface EventsByDate {
 const today = format(new Date(), "yyyy-MM-dd");
 const yesterday = format(new Date(Date.now() - 86400000), "yyyy-MM-dd");
 const tomorrow = format(new Date(Date.now() + 86400000), "yyyy-MM-dd");
-const dayAfterTomorrow = format(new Date(Date.now() + 2 * 86400000), "yyyy-MM-dd");
+const dayAfterTomorrow = format(
+  new Date(Date.now() + 2 * 86400000),
+  "yyyy-MM-dd",
+);
 const twoDaysAgo = format(new Date(Date.now() - 2 * 86400000), "yyyy-MM-dd");
 
 // This would typically come from a database or API

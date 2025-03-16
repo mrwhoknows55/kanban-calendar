@@ -13,7 +13,7 @@ export function useMediaQuery(query: string): boolean {
   useEffect(() => {
     // Create a media query list
     const mediaQuery = window.matchMedia(query);
-    
+
     // Set the initial value
     setMatches(mediaQuery.matches);
 
@@ -32,4 +32,4 @@ export function useMediaQuery(query: string): boolean {
   }, [query]);
 
   return matches;
-} 
+}
