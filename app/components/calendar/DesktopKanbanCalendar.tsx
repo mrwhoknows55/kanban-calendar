@@ -5,7 +5,14 @@ import { format, addDays, subDays, startOfWeek, isToday } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { type Event } from "@/app/lib/calendar-data";
 import { cn, formatDate } from "@/app/lib/utils";
-import { ChevronLeft, ChevronRight, MoveHorizontal, X, Clock, Calendar } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  MoveHorizontal,
+  X,
+  Clock,
+  Calendar,
+} from "lucide-react";
 import { useCalendarEvents } from "@/app/lib/calendar-hooks";
 import { useDragStore } from "@/app/lib/gesture-utils";
 import { Card } from "@/app/components/ui/card";
@@ -32,7 +39,6 @@ export function DesktopKanbanCalendar({
   initialDate: initialDate,
   events: initialEvents,
 }: DesktopKanbanCalendarProps) {
-
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
     startOfWeek(initialDate, { weekStartsOn: 1 }),
   );
@@ -200,54 +206,40 @@ export function DesktopKanbanCalendar({
       }
     };
 
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 0) return;
+
+      const touch = e.touches[0];
+
+      // Find which column the touch is over
+      for (const dateKey in columnRefs.current) {
+        const column = columnRefs.current[dateKey];
+        if (!column) continue;
+
+        const rect = column.getBoundingClientRect();
+        if (
+          touch.clientX >= rect.left &&
+          touch.clientX <= rect.right &&
+          touch.clientY >= rect.top &&
+          touch.clientY <= rect.bottom
+        ) {
+          if (activeDragTarget !== dateKey) {
+            setActiveDragTarget(dateKey);
+          }
+          break;
+        }
+      }
+    };
+
     document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("touchmove", handleTouchMove);
     };
   }, [isDragging, activeDragTarget]);
 
-  // Animation variants for event details
-  const dialogVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { duration: 0.15 }
-    },
-    exit: { 
-      opacity: 0,
-      transition: { 
-        duration: 0.15,
-        delay: 0.05
-      }
-    }
-  };
-
-  const contentVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1,
-      transition: { delay: 0.1, duration: 0.2 }
-    },
-    exit: { 
-      y: 20, 
-      opacity: 0,
-      transition: { duration: 0.15 }
-    }
-  };
-
-  const detailsVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { delay: 0.15, duration: 0.2 }
-    },
-    exit: { 
-      opacity: 0,
-      transition: { duration: 0.1 }
-    }
-  };
 
   const fallbackImageUrl =
     "https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=1920&h=1080&auto=format&fit=crop";
@@ -321,6 +313,16 @@ export function DesktopKanbanCalendar({
                 )}
                 onMouseOver={() => handleDragOver(dateKey)}
                 onTouchMove={() => handleDragOver(dateKey)}
+                onDragOver={(e) => {
+                  e.preventDefault(); // Required to allow dropping
+                  handleDragOver(dateKey);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (draggedEvent) {
+                    handleEventDragEnd();
+                  }
+                }}
               >
                 {/* Drop indicator overlay */}
                 {isDragging && (
@@ -521,13 +523,33 @@ export function DesktopKanbanCalendar({
                                 }}
                               >
                                 <Card
-                                  className="mb-5 cursor-pointer hover:shadow-md transition-all overflow-hidden rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.1)]"
+                                  className={cn(
+                                    "mb-5 cursor-pointer transition-all overflow-hidden rounded-xl",
+                                    isDragging &&
+                                      draggedEvent?.event.id === event.id
+                                      ? "shadow-lg opacity-50 scale-95"
+                                      : "hover:shadow-md shadow-[0_2px_6px_rgba(0,0,0,0.1)]",
+                                  )}
                                   onClick={() => {
                                     setSelectedEvent(event);
                                     setIsEventOpen(true);
                                   }}
+                                  onMouseDown={() => {
+                                    handleEventDragStart(event, dateKey);
+                                  }}
+                                  onMouseUp={handleEventDragEnd}
+                                  onTouchStart={() => {
+                                    handleEventDragStart(event, dateKey);
+                                  }}
+                                  onTouchEnd={handleEventDragEnd}
+                                  draggable
+                                  onDragStart={(e) => {
+                                    e.dataTransfer.effectAllowed = "move";
+                                    handleEventDragStart(event, dateKey);
+                                  }}
+                                  onDragEnd={handleEventDragEnd}
                                 >
-                                  <motion.div 
+                                  <motion.div
                                     className="relative w-full h-[160px] overflow-hidden rounded-t-xl"
                                     layoutId={`image-container-${event.id}`}
                                   >
@@ -538,30 +560,33 @@ export function DesktopKanbanCalendar({
                                       className="object-cover pointer-events-none"
                                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                       priority
-                                      onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                                      onError={(
+                                        e: React.SyntheticEvent<HTMLImageElement>,
+                                      ) => {
                                         // Fallback image on error
-                                        const target = e.target as HTMLImageElement;
+                                        const target =
+                                          e.target as HTMLImageElement;
                                         target.src = fallbackImageUrl;
                                       }}
                                     />
-                                    <motion.div 
+                                    <motion.div
                                       className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10"
                                       layoutId={`time-badge-${event.id}`}
                                     >
                                       {event.time}
                                     </motion.div>
                                   </motion.div>
-                                  <motion.div 
+                                  <motion.div
                                     className="p-5 flex flex-col"
                                     layoutId={`content-container-${event.id}`}
                                   >
-                                    <motion.h3 
+                                    <motion.h3
                                       className="text-lg font-semibold text-[#222222] mb-2"
                                       layoutId={`title-${event.id}`}
                                     >
                                       {event.title}
                                     </motion.h3>
-                                    <motion.p 
+                                    <motion.p
                                       className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2"
                                       layoutId={`description-${event.id}`}
                                     >
@@ -614,11 +639,14 @@ export function DesktopKanbanCalendar({
       {/* Full-page event details */}
       <AnimatePresence mode="sync" onExitComplete={() => {}}>
         {isEventOpen && selectedEvent && (
-          <motion.div 
+          <motion.div
             className="fixed inset-0 z-50 flex items-center justify-center pointer-events-auto"
             initial={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
             animate={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-            exit={{ backgroundColor: "rgba(0, 0, 0, 0)", transition: { duration: 0.2 } }}
+            exit={{
+              backgroundColor: "rgba(0, 0, 0, 0)",
+              transition: { duration: 0.2 },
+            }}
             transition={{ duration: 0.3 }}
             onClick={(e) => {
               // Close the modal when clicking the backdrop, but not when clicking the content
@@ -631,34 +659,34 @@ export function DesktopKanbanCalendar({
               className="relative z-10 w-full h-full max-w-6xl mx-auto flex flex-col overflow-hidden bg-white rounded-xl shadow-xl md:h-[85vh] md:my-auto pointer-events-auto"
               layoutId={`card-container-${selectedEvent.id}`}
               initial={{ borderRadius: 12, y: 20, opacity: 0.8, scale: 0.8 }}
-              animate={{ 
-                borderRadius: 12, 
-                y: 0, 
-                opacity: 1, 
+              animate={{
+                borderRadius: 12,
+                y: 0,
+                opacity: 1,
                 scale: 1,
                 transition: {
                   type: "spring",
                   stiffness: 300,
                   damping: 30,
-                  duration: 0.4
-                }
+                  duration: 0.4,
+                },
               }}
-              exit={{ 
-                borderRadius: 12, 
-                y: 20, 
-                opacity: 0, 
+              exit={{
+                borderRadius: 12,
+                y: 20,
+                opacity: 0,
                 scale: 0.8,
                 transition: {
                   type: "spring",
                   stiffness: 500,
                   damping: 40,
-                  duration: 0.25
-                }
+                  duration: 0.25,
+                },
               }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}
-              <motion.button 
+              <motion.button
                 onClick={() => setIsEventOpen(false)}
                 className="absolute right-5 top-5 z-50 rounded-full bg-black/20 p-2 text-white hover:bg-black/30 transition-colors duration-200 focus:outline-none"
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -678,7 +706,7 @@ export function DesktopKanbanCalendar({
               </VisuallyHidden>
 
               {/* Cover image section */}
-              <motion.div 
+              <motion.div
                 className="relative w-full h-[40vh] md:h-[40vh] overflow-hidden rounded-t-xl"
                 layoutId={`image-container-${selectedEvent.id}`}
               >
@@ -700,14 +728,14 @@ export function DesktopKanbanCalendar({
                 {/* Header content overlay */}
                 <div className="absolute bottom-0 left-0 p-8 text-white w-full">
                   <div className="flex items-center justify-between mb-2">
-                    <motion.h2 
+                    <motion.h2
                       className="text-2xl sm:text-3xl font-bold"
                       layoutId={`title-${selectedEvent.id}`}
                     >
                       {selectedEvent.title}
                     </motion.h2>
 
-                    <motion.div 
+                    <motion.div
                       className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-white"
                       layoutId={`time-badge-${selectedEvent.id}`}
                     >
@@ -715,7 +743,7 @@ export function DesktopKanbanCalendar({
                     </motion.div>
                   </div>
 
-                  <motion.div 
+                  <motion.div
                     className="flex items-center"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -729,27 +757,27 @@ export function DesktopKanbanCalendar({
               </motion.div>
 
               {/* Content section */}
-              <motion.div 
+              <motion.div
                 className="overflow-y-auto bg-white w-full h-[calc(100vh-40vh)] md:h-[calc(85vh-40vh)] rounded-b-xl"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                transition={{ 
+                transition={{
                   type: "spring",
                   stiffness: 300,
                   damping: 30,
                   delay: 0.1,
-                  duration: 0.2
+                  duration: 0.2,
                 }}
               >
-                <motion.div 
+                <motion.div
                   className="p-8 md:p-12"
                   layoutId={`content-container-${selectedEvent.id}`}
                   transition={{
                     type: "spring",
                     stiffness: 300,
                     damping: 30,
-                    duration: 0.3
+                    duration: 0.3,
                   }}
                 >
                   <motion.div
@@ -763,7 +791,7 @@ export function DesktopKanbanCalendar({
                       <h3 className="text-xl font-semibold text-gray-800 mb-4">
                         Description
                       </h3>
-                      <motion.p 
+                      <motion.p
                         className="text-gray-600 leading-relaxed text-base"
                         layoutId={`description-${selectedEvent.id}`}
                       >
@@ -783,7 +811,7 @@ export function DesktopKanbanCalendar({
                       </h3>
 
                       <div className="space-y-4">
-                        <motion.div 
+                        <motion.div
                           className="flex items-start"
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
@@ -801,7 +829,7 @@ export function DesktopKanbanCalendar({
                           </div>
                         </motion.div>
 
-                        <motion.div 
+                        <motion.div
                           className="flex items-start"
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}

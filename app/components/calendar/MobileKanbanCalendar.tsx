@@ -37,7 +37,6 @@ export function MobileKanbanCalendar({
   initialDate: initialDate,
   events: initialEvents,
 }: MobileKanbanCalendarProps) {
-
   const [currentDate, setCurrentDate] = useState<Date>(initialDate);
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
     startOfWeek(currentDate, { weekStartsOn: 1 }),
@@ -248,11 +247,15 @@ export function MobileKanbanCalendar({
                             setIsEventOpen(true);
                           }}
                         >
-                          <motion.div 
+                          <motion.div
                             className="relative w-full h-[160px] overflow-hidden rounded-t-xl"
                             layoutId={`image-container-${event.id}`}
                             transition={{
-                              layout: { type: "spring", stiffness: 300, damping: 25 }
+                              layout: {
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 25,
+                              },
                             }}
                           >
                             <Image
@@ -270,37 +273,53 @@ export function MobileKanbanCalendar({
                                 target.src = fallbackImageUrl;
                               }}
                             />
-                            <motion.div 
+                            <motion.div
                               className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10"
                               layoutId={`time-badge-${event.id}`}
                               transition={{
-                                layout: { type: "spring", stiffness: 500, damping: 25 }
+                                layout: {
+                                  type: "spring",
+                                  stiffness: 500,
+                                  damping: 25,
+                                },
                               }}
                             >
                               {event.time}
                             </motion.div>
                           </motion.div>
-                          <motion.div 
+                          <motion.div
                             className="p-5 flex flex-col"
                             layoutId={`content-container-${event.id}`}
                             transition={{
-                              layout: { type: "spring", stiffness: 300, damping: 25 }
+                              layout: {
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 25,
+                              },
                             }}
                           >
-                            <motion.h3 
+                            <motion.h3
                               className="text-lg font-semibold text-[#222222] mb-2"
                               layoutId={`title-${event.id}`}
                               transition={{
-                                layout: { type: "spring", stiffness: 300, damping: 25 }
+                                layout: {
+                                  type: "spring",
+                                  stiffness: 300,
+                                  damping: 25,
+                                },
                               }}
                             >
                               {event.title}
                             </motion.h3>
-                            <motion.p 
+                            <motion.p
                               className="text-sm font-normal text-[#666666] leading-[1.5] line-clamp-2"
                               layoutId={`description-${event.id}`}
                               transition={{
-                                layout: { type: "spring", stiffness: 300, damping: 25 }
+                                layout: {
+                                  type: "spring",
+                                  stiffness: 300,
+                                  damping: 25,
+                                },
                               }}
                             >
                               {event.description}
@@ -321,7 +340,7 @@ export function MobileKanbanCalendar({
       <Dialog open={isEventOpen} onOpenChange={setIsEventOpen}>
         <AnimatePresence mode="sync" onExitComplete={() => {}}>
           {isEventOpen && selectedEvent && (
-            <DialogContent 
+            <DialogContent
               className="p-0 overflow-hidden max-w-none w-full h-full sm:h-auto sm:max-w-[500px] sm:rounded-lg border-none"
               onPointerDownOutside={(e) => {
                 // Prevent interaction with elements behind the dialog
@@ -340,17 +359,17 @@ export function MobileKanbanCalendar({
               </VisuallyHidden>
               <motion.div
                 layoutId={`card-container-${selectedEvent.id}`}
-                initial={{ 
-                  borderRadius: 12, 
-                  y: 20, 
-                  opacity: 0.8, 
+                initial={{
+                  borderRadius: 12,
+                  y: 20,
+                  opacity: 0.8,
                   scale: 0.8,
-                  rotate: 1
+                  rotate: 1,
                 }}
-                animate={{ 
-                  borderRadius: 12, 
-                  y: 0, 
-                  opacity: 1, 
+                animate={{
+                  borderRadius: 12,
+                  y: 0,
+                  opacity: 1,
                   scale: 1,
                   rotate: 0,
                   transition: {
@@ -358,13 +377,13 @@ export function MobileKanbanCalendar({
                     stiffness: 300,
                     damping: 25,
                     mass: 0.8,
-                    velocity: 2
-                  }
+                    velocity: 2,
+                  },
                 }}
-                exit={{ 
-                  borderRadius: 12, 
-                  y: 30, 
-                  opacity: 0, 
+                exit={{
+                  borderRadius: 12,
+                  y: 30,
+                  opacity: 0,
                   scale: 0.8,
                   rotate: -1,
                   transition: {
@@ -372,17 +391,17 @@ export function MobileKanbanCalendar({
                     stiffness: 350,
                     damping: 22,
                     mass: 0.7,
-                    velocity: 3
-                  }
+                    velocity: 3,
+                  },
                 }}
                 className="flex flex-col h-full bg-white shadow-2xl"
               >
                 {/* Cover image section */}
-                <motion.div 
+                <motion.div
                   className="relative w-full h-[40vh] sm:h-[280px] overflow-hidden rounded-t-xl"
                   layoutId={`image-container-${selectedEvent.id}`}
                   transition={{
-                    layout: { type: "spring", stiffness: 300, damping: 25 }
+                    layout: { type: "spring", stiffness: 300, damping: 25 },
                   }}
                 >
                   <Image
@@ -403,47 +422,55 @@ export function MobileKanbanCalendar({
                   {/* Header content overlay */}
                   <div className="absolute bottom-0 left-0 p-8 text-white w-full">
                     <div className="flex items-center justify-between mb-2">
-                      <motion.h2 
+                      <motion.h2
                         className="text-2xl font-bold"
                         layoutId={`title-${selectedEvent.id}`}
                         transition={{
-                          layout: { type: "spring", stiffness: 300, damping: 25 }
+                          layout: {
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 25,
+                          },
                         }}
                       >
                         {selectedEvent.title}
                       </motion.h2>
 
-                      <motion.div 
+                      <motion.div
                         className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-white"
                         layoutId={`time-badge-${selectedEvent.id}`}
                         transition={{
-                          layout: { type: "spring", stiffness: 500, damping: 25 }
+                          layout: {
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 25,
+                          },
                         }}
                       >
                         {selectedEvent.time}
                       </motion.div>
                     </div>
 
-                    <motion.div 
+                    <motion.div
                       className="flex items-center"
                       initial={{ opacity: 0, y: 10 }}
-                      animate={{ 
-                        opacity: 1, 
+                      animate={{
+                        opacity: 1,
                         y: 0,
-                        transition: { 
-                          type: "spring", 
-                          stiffness: 400, 
+                        transition: {
+                          type: "spring",
+                          stiffness: 400,
                           damping: 20,
-                          delay: 0.2
-                        }
+                          delay: 0.2,
+                        },
                       }}
-                      exit={{ 
-                        opacity: 0, 
-                        y: 5, 
-                        transition: { 
+                      exit={{
+                        opacity: 0,
+                        y: 5,
+                        transition: {
                           duration: 0.15,
-                          ease: "easeInOut"
-                        }
+                          ease: "easeInOut",
+                        },
                       }}
                     >
                       <Calendar className="w-4 h-4 mr-2 opacity-80" />
@@ -453,53 +480,58 @@ export function MobileKanbanCalendar({
                 </motion.div>
 
                 {/* Content section */}
-                <motion.div 
+                <motion.div
                   className="flex-1 overflow-y-auto bg-white"
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ 
-                    opacity: 1, 
+                  animate={{
+                    opacity: 1,
                     y: 0,
-                    transition: { 
+                    transition: {
                       type: "spring",
                       stiffness: 300,
                       damping: 25,
                       mass: 0.8,
-                      delay: 0.1
-                    }
+                      delay: 0.1,
+                    },
                   }}
-                  exit={{ 
-                    opacity: 0, 
-                    y: 10, 
-                    transition: { 
+                  exit={{
+                    opacity: 0,
+                    y: 10,
+                    transition: {
                       duration: 0.2,
-                      ease: "easeOut"
-                    }
+                      ease: "easeOut",
+                    },
                   }}
                 >
-                  <motion.div 
+                  <motion.div
                     className="p-8"
                     layoutId={`content-container-${selectedEvent.id}`}
                     transition={{
-                      layout: { type: "spring", stiffness: 300, damping: 25 }
+                      layout: { type: "spring", stiffness: 300, damping: 25 },
                     }}
                   >
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
-                      animate={{ 
-                        height: "auto", 
+                      animate={{
+                        height: "auto",
                         opacity: 1,
                         transition: {
-                          height: { type: "spring", stiffness: 300, damping: 25, delay: 0.1 },
-                          opacity: { duration: 0.2, delay: 0.2 }
-                        }
+                          height: {
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 25,
+                            delay: 0.1,
+                          },
+                          opacity: { duration: 0.2, delay: 0.2 },
+                        },
                       }}
-                      exit={{ 
-                        height: 0, 
-                        opacity: 0, 
-                        transition: { 
+                      exit={{
+                        height: 0,
+                        opacity: 0,
+                        transition: {
                           height: { duration: 0.2 },
-                          opacity: { duration: 0.15 }
-                        }
+                          opacity: { duration: 0.15 },
+                        },
                       }}
                       className="overflow-hidden"
                     >
@@ -507,11 +539,15 @@ export function MobileKanbanCalendar({
                         <h3 className="text-xl font-semibold text-gray-800 mb-4">
                           Description
                         </h3>
-                        <motion.p 
+                        <motion.p
                           className="text-gray-600 leading-relaxed text-base"
                           layoutId={`description-${selectedEvent.id}`}
                           transition={{
-                            layout: { type: "spring", stiffness: 300, damping: 25 }
+                            layout: {
+                              type: "spring",
+                              stiffness: 300,
+                              damping: 25,
+                            },
                           }}
                         >
                           {selectedEvent.description}
@@ -521,23 +557,23 @@ export function MobileKanbanCalendar({
                       <motion.div
                         className="border-t border-gray-200 pt-6"
                         initial={{ opacity: 0, y: 20 }}
-                        animate={{ 
-                          opacity: 1, 
+                        animate={{
+                          opacity: 1,
                           y: 0,
                           transition: {
                             type: "spring",
                             stiffness: 400,
                             damping: 25,
-                            delay: 0.25
-                          }
+                            delay: 0.25,
+                          },
                         }}
-                        exit={{ 
-                          opacity: 0, 
-                          y: 5, 
-                          transition: { 
+                        exit={{
+                          opacity: 0,
+                          y: 5,
+                          transition: {
                             duration: 0.1,
-                            ease: "easeIn"
-                          }
+                            ease: "easeIn",
+                          },
                         }}
                       >
                         <h3 className="text-sm font-medium text-gray-500 mb-4">
@@ -545,26 +581,26 @@ export function MobileKanbanCalendar({
                         </h3>
 
                         <div className="space-y-4">
-                          <motion.div 
+                          <motion.div
                             className="flex items-start"
                             initial={{ opacity: 0, x: -10 }}
-                            animate={{ 
-                              opacity: 1, 
+                            animate={{
+                              opacity: 1,
                               x: 0,
                               transition: {
                                 type: "spring",
                                 stiffness: 400,
                                 damping: 25,
-                                delay: 0.3
-                              }
+                                delay: 0.3,
+                              },
                             }}
-                            exit={{ 
-                              opacity: 0, 
-                              x: -3, 
-                              transition: { 
+                            exit={{
+                              opacity: 0,
+                              x: -3,
+                              transition: {
                                 duration: 0.1,
-                                ease: "easeIn"
-                              }
+                                ease: "easeIn",
+                              },
                             }}
                           >
                             <Calendar className="w-5 h-5 text-[#6c63ff] mr-4 mt-0.5" />
@@ -578,26 +614,26 @@ export function MobileKanbanCalendar({
                             </div>
                           </motion.div>
 
-                          <motion.div 
+                          <motion.div
                             className="flex items-start"
                             initial={{ opacity: 0, x: -10 }}
-                            animate={{ 
-                              opacity: 1, 
+                            animate={{
+                              opacity: 1,
                               x: 0,
                               transition: {
                                 type: "spring",
                                 stiffness: 400,
                                 damping: 25,
-                                delay: 0.4
-                              }
+                                delay: 0.4,
+                              },
                             }}
-                            exit={{ 
-                              opacity: 0, 
-                              x: -3, 
-                              transition: { 
+                            exit={{
+                              opacity: 0,
+                              x: -3,
+                              transition: {
                                 duration: 0.1,
-                                ease: "easeIn"
-                              }
+                                ease: "easeIn",
+                              },
                             }}
                           >
                             <Clock className="w-5 h-5 text-[#6c63ff] mr-4 mt-0.5" />
@@ -616,24 +652,24 @@ export function MobileKanbanCalendar({
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ 
-                  opacity: 1, 
+                animate={{
+                  opacity: 1,
                   scale: 1,
-                  transition: { 
-                    delay: 0.2, 
+                  transition: {
+                    delay: 0.2,
                     duration: 0.2,
                     type: "spring",
                     stiffness: 400,
-                    damping: 20
-                  }
+                    damping: 20,
+                  },
                 }}
-                exit={{ 
-                  opacity: 0, 
+                exit={{
+                  opacity: 0,
                   scale: 0.8,
-                  transition: { 
+                  transition: {
                     duration: 0.15,
-                    ease: "easeInOut"
-                  }
+                    ease: "easeInOut",
+                  },
                 }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
