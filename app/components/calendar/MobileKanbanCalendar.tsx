@@ -27,6 +27,7 @@ import { Calendar, Clock } from "lucide-react";
 import { X } from "lucide-react";
 import { Root as VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import Image from "next/image";
+import { TimePill } from "@/app/components/calendar/TimePill";
 
 interface MobileKanbanCalendarProps {
   initialDate: Date;
@@ -273,19 +274,11 @@ export function MobileKanbanCalendar({
                                 target.src = fallbackImageUrl;
                               }}
                             />
-                            <motion.div
-                              className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10"
-                              layoutId={`time-badge-${event.id}`}
-                              transition={{
-                                layout: {
-                                  type: "spring",
-                                  stiffness: 500,
-                                  damping: 25,
-                                },
-                              }}
-                            >
-                              {event.time}
-                            </motion.div>
+                            <TimePill
+                              time={event.time}
+                              className="absolute top-4 right-4"
+                              layoutId={`time-pill-${event.id}`}
+                            />
                           </motion.div>
                           <motion.div
                             className="p-5 flex flex-col"
@@ -435,20 +428,10 @@ export function MobileKanbanCalendar({
                       >
                         {selectedEvent.title}
                       </motion.h2>
-
-                      <motion.div
-                        className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-white"
-                        layoutId={`time-badge-${selectedEvent.id}`}
-                        transition={{
-                          layout: {
-                            type: "spring",
-                            stiffness: 500,
-                            damping: 25,
-                          },
-                        }}
-                      >
-                        {selectedEvent.time}
-                      </motion.div>
+                      <TimePill
+                        time={selectedEvent.time}
+                        layoutId={`time-pill-${selectedEvent.id}`}
+                      />
                     </div>
 
                     <motion.div

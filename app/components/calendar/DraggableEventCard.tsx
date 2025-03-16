@@ -23,6 +23,7 @@ import { X, Clock, Calendar } from "lucide-react";
 import { Root as VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { cn } from "@/app/lib/utils";
 import { useDragStore } from "@/app/lib/gesture-utils";
+import { TimePill } from "@/app/components/calendar/TimePill";
 
 interface DraggableEventCardProps {
   event: Event;
@@ -263,9 +264,7 @@ export function DraggableEventCard({
               onError={() => setImageError(true)}
               draggable={false}
             />
-            <div className="absolute top-4 right-4 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10">
-              {event.time}
-            </div>
+            <TimePill time={event.time} className="absolute top-4 right-4" />
           </div>
           <div className="p-5 flex flex-col">
             <h3 className="text-lg font-semibold text-[#222222] mb-2">
@@ -310,9 +309,10 @@ export function DraggableEventCard({
                   <div className="flex items-center justify-between mb-2">
                     <h2 className="text-2xl font-bold">{event.title}</h2>
 
-                    <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-white">
-                      {event.time}
-                    </div>
+                    <TimePill
+                      time={event.time}
+                      layoutId={`time-pill-${event.id}`}
+                    />
                   </div>
 
                   <div className="flex items-center">

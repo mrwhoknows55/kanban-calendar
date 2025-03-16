@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/app/components/ui/dialog";
+import { TimePill } from "@/app/components/calendar/TimePill";
 
 interface EventCardProps {
   event: Event;
@@ -36,9 +37,11 @@ export function EventCard({ event }: EventCardProps) {
               priority
               onError={() => setImageError(true)}
             />
-            <div className="absolute top-3 right-3 bg-[#6c63ff] px-3 py-1.5 rounded-full text-sm font-bold text-white z-10">
-              {event.time}
-            </div>
+            <TimePill
+              time={event.time}
+              className="absolute top-3 right-3"
+              layoutId={`time-pill-${event.id}`}
+            />
           </div>
           <div className="p-4 flex flex-col">
             <h3 className="text-lg font-semibold text-[#222222] mb-1">
@@ -57,7 +60,11 @@ export function EventCard({ event }: EventCardProps) {
             {event.title}
           </DialogTitle>
           <DialogDescription className="text-white/90 text-base">
-            {event.time}
+            <TimePill
+              time={event.time}
+              className="inline-flex"
+              layoutId={`time-pill-${event.id}`}
+            />
           </DialogDescription>
         </DialogHeader>
 
