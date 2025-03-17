@@ -1,4 +1,10 @@
-import { format } from "date-fns";
+import {
+  format,
+  isToday,
+  isYesterday,
+  isTomorrow,
+  differenceInDays,
+} from "date-fns";
 
 export interface Event {
   id: string;
@@ -6,13 +12,33 @@ export interface Event {
   description: string;
   imageUrl: string;
   time: string;
+  duration?: string;
+  fullDate?: string;
+}
+
+export function getRelativeDate(date: Date): string {
+  if (isToday(date)) return "Today";
+  if (isYesterday(date)) return "Yesterday";
+  if (isTomorrow(date)) return "Tomorrow";
+
+  const diffDays = differenceInDays(date, new Date());
+
+  if (diffDays < 0) {
+    const absDiff = Math.abs(diffDays);
+    return absDiff === 1 ? "Yesterday" : `${absDiff} days ago`;
+  }
+
+  if (diffDays > 0) {
+    return diffDays === 1 ? "Tomorrow" : `In ${diffDays} days`;
+  }
+
+  return format(date, "EEEE, MMMM d");
 }
 
 interface EventsByDate {
   [date: string]: Event[];
 }
 
-// Get current date in yyyy-MM-dd format
 const today = format(new Date(), "yyyy-MM-dd");
 const yesterday = format(new Date(Date.now() - 86400000), "yyyy-MM-dd");
 const tomorrow = format(new Date(Date.now() + 86400000), "yyyy-MM-dd");
@@ -22,8 +48,7 @@ const dayAfterTomorrow = format(
 );
 const twoDaysAgo = format(new Date(Date.now() - 2 * 86400000), "yyyy-MM-dd");
 
-// This would typically come from a database or API
-// For now, we'll keep it as a static object with dynamic dates
+// This is the mock data for the calendar
 const events: EventsByDate = {
   [twoDaysAgo]: [
     {
@@ -34,6 +59,8 @@ const events: EventsByDate = {
       imageUrl:
         "https://fastly.picsum.photos/id/433/1920/1080.jpg?hmac=_4-vRvvQSPtpfXL-XRDgPVTrSsQJWJZhWbBkl_Qk67k",
       time: "10:00 AM",
+      duration: "2 hours",
+      fullDate: format(new Date(twoDaysAgo), "EEEE, MMMM d, yyyy"),
     },
   ],
   [yesterday]: [
@@ -45,6 +72,8 @@ const events: EventsByDate = {
       imageUrl:
         "https://fastly.picsum.photos/id/96/1920/1080.jpg?hmac=kKFGWKDL7yQZpfQJkLXQRvWtQHmXLmE6RyqxXYEgXTU",
       time: "02:30 PM",
+      duration: "1.5 hours",
+      fullDate: format(new Date(yesterday), "EEEE, MMMM d, yyyy"),
     },
     {
       id: "event-past-3",
@@ -54,6 +83,8 @@ const events: EventsByDate = {
       imageUrl:
         "https://fastly.picsum.photos/id/292/1920/1080.jpg?hmac=HYdJVbXwxIbT-Qs_Ib9s9GbM9haT3RzHhgI4hj2Vsj0",
       time: "12:00 PM",
+      duration: "1 hour",
+      fullDate: format(new Date(yesterday), "EEEE, MMMM d, yyyy"),
     },
   ],
   [today]: [
@@ -65,6 +96,8 @@ const events: EventsByDate = {
       imageUrl:
         "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "09:00 AM",
+      duration: "45 minutes",
+      fullDate: format(new Date(today), "EEEE, MMMM d, yyyy"),
     },
     {
       id: "event-2",
@@ -74,6 +107,8 @@ const events: EventsByDate = {
       imageUrl:
         "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "02:00 PM",
+      duration: "30 minutes",
+      fullDate: format(new Date(today), "EEEE, MMMM d, yyyy"),
     },
     {
       id: "event-today-3",
@@ -83,6 +118,8 @@ const events: EventsByDate = {
       imageUrl:
         "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "04:30 PM",
+      duration: "1 hour",
+      fullDate: format(new Date(today), "EEEE, MMMM d, yyyy"),
     },
   ],
   [tomorrow]: [
@@ -94,6 +131,8 @@ const events: EventsByDate = {
       imageUrl:
         "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "12:00 PM",
+      duration: "1 hour",
+      fullDate: format(new Date(tomorrow), "EEEE, MMMM d, yyyy"),
     },
     {
       id: "event-4",
@@ -103,6 +142,8 @@ const events: EventsByDate = {
       imageUrl:
         "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "03:30 PM",
+      duration: "1 hour",
+      fullDate: format(new Date(tomorrow), "EEEE, MMMM d, yyyy"),
     },
     {
       id: "event-tomorrow-3",
@@ -112,6 +153,8 @@ const events: EventsByDate = {
       imageUrl:
         "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "10:00 AM",
+      duration: "45 minutes",
+      fullDate: format(new Date(tomorrow), "EEEE, MMMM d, yyyy"),
     },
   ],
   [dayAfterTomorrow]: [
@@ -123,6 +166,8 @@ const events: EventsByDate = {
       imageUrl:
         "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "11:30 AM",
+      duration: "2 hours",
+      fullDate: format(new Date(dayAfterTomorrow), "EEEE, MMMM d, yyyy"),
     },
     {
       id: "event-future-2",
@@ -132,33 +177,22 @@ const events: EventsByDate = {
       imageUrl:
         "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "03:00 PM",
+      duration: "1.5 hours",
+      fullDate: format(new Date(dayAfterTomorrow), "EEEE, MMMM d, yyyy"),
     },
   ],
 };
 
-/**
- * Get events for a specific date
- * This function can be called from server components
- */
 export async function getEventsForDate(date: Date): Promise<Event[]> {
-  // No need to simulate a database call with the mock data
   const dateKey = format(date, "yyyy-MM-dd");
   return events[dateKey] || [];
 }
 
-/**
- * Check if a date has any events
- */
 export async function hasEventsForDate(date: Date): Promise<boolean> {
-  // No need to simulate a database call with the mock data
   const dateKey = format(date, "yyyy-MM-dd");
   return !!events[dateKey] && events[dateKey].length > 0;
 }
 
-/**
- * Get all available dates with events
- */
 export async function getEventDates(): Promise<string[]> {
-  // No need to simulate a database call with the mock data
   return Object.keys(events);
 }

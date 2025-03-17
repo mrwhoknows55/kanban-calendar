@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import Image from "next/image";
-import { type Event } from "@/app/lib/calendar-data";
+import { type Event, getRelativeDate } from "@/app/lib/calendar-data";
 import { Card } from "@/app/components/ui/card";
 import {
   Dialog,
@@ -24,6 +24,7 @@ import { Root as VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { cn } from "@/app/lib/utils";
 import { useDragStore } from "@/app/lib/gesture-utils";
 import { TimePill } from "@/app/components/calendar/TimePill";
+import { format } from "date-fns";
 
 interface DraggableEventCardProps {
   event: Event;
@@ -317,7 +318,11 @@ export function DraggableEventCard({
 
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-2 opacity-80" />
-                    <span className="text-sm text-white/90">Today</span>
+                    <span className="text-sm text-white/90">
+                      {event.fullDate
+                        ? getRelativeDate(new Date(event.fullDate))
+                        : "Today"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -359,7 +364,9 @@ export function DraggableEventCard({
                             Date & Time
                           </p>
                           <p className="text-sm text-gray-500">
-                            Today at {event.time}
+                            {event.fullDate ||
+                              format(new Date(), "EEEE, MMMM d, yyyy")}{" "}
+                            at {event.time}
                           </p>
                         </div>
                       </div>
@@ -370,7 +377,9 @@ export function DraggableEventCard({
                           <p className="text-sm font-medium text-gray-700">
                             Duration
                           </p>
-                          <p className="text-sm text-gray-500">1 hour</p>
+                          <p className="text-sm text-gray-500">
+                            {event.duration || "1 hour"}
+                          </p>
                         </div>
                       </div>
                     </div>

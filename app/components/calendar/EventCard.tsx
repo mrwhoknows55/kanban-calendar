@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { type Event } from "@/app/lib/calendar-data";
+import { type Event, getRelativeDate } from "@/app/lib/calendar-data";
 import { Card } from "@/app/components/ui/card";
 import {
   Dialog,
@@ -13,6 +13,8 @@ import {
   DialogTrigger,
 } from "@/app/components/ui/dialog";
 import { TimePill } from "@/app/components/calendar/TimePill";
+import { Calendar, Clock } from "lucide-react";
+import { format } from "date-fns";
 
 interface EventCardProps {
   event: Event;
@@ -59,7 +61,15 @@ export function EventCard({ event }: EventCardProps) {
           <DialogTitle className="text-white text-xl">
             {event.title}
           </DialogTitle>
-          <DialogDescription className="text-white/90 text-base">
+          <DialogDescription className="text-white/90 text-base flex items-center justify-between">
+            <div className="flex items-center">
+              <Calendar className="w-4 h-4 mr-2 opacity-80" />
+              <span className="text-sm text-white/90">
+                {event.fullDate
+                  ? getRelativeDate(new Date(event.fullDate))
+                  : "Today"}
+              </span>
+            </div>
             <TimePill
               time={event.time}
               className="inline-flex"
@@ -85,6 +95,35 @@ export function EventCard({ event }: EventCardProps) {
           <p className="text-[#666666] text-sm leading-relaxed">
             {event.description}
           </p>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <h4 className="text-sm font-medium text-gray-500 mb-3">
+            Event Details
+          </h4>
+
+          <div className="space-y-3">
+            <div className="flex items-start">
+              <Calendar className="w-5 h-5 text-[#6c63ff] mr-3 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-gray-700">Date & Time</p>
+                <p className="text-sm text-gray-500">
+                  {event.fullDate || format(new Date(), "EEEE, MMMM d, yyyy")}{" "}
+                  at {event.time}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start">
+              <Clock className="w-5 h-5 text-[#6c63ff] mr-3 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-gray-700">Duration</p>
+                <p className="text-sm text-gray-500">
+                  {event.duration || "1 hour"}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

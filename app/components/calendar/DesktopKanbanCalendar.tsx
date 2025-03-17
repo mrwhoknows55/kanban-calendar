@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { format, addDays, subDays, startOfWeek, isToday } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
-import { type Event } from "@/app/lib/calendar-data";
+import { type Event, getRelativeDate } from "@/app/lib/calendar-data";
 import { cn, formatDate } from "@/app/lib/utils";
 import {
   ChevronLeft,
@@ -751,7 +751,11 @@ export function DesktopKanbanCalendar({
                     transition={{ delay: 0.3, duration: 0.2 }}
                   >
                     <Calendar className="w-4 h-4 mr-2 opacity-80" />
-                    <span className="text-sm text-white/90">Today</span>
+                    <span className="text-sm text-white/90">
+                      {selectedEvent.fullDate
+                        ? getRelativeDate(new Date(selectedEvent.fullDate))
+                        : "Today"}
+                    </span>
                   </motion.div>
                 </div>
               </motion.div>
@@ -824,7 +828,9 @@ export function DesktopKanbanCalendar({
                               Date & Time
                             </p>
                             <p className="text-sm text-gray-500">
-                              Today at {selectedEvent.time}
+                              {selectedEvent.fullDate ||
+                                format(new Date(), "EEEE, MMMM d, yyyy")}{" "}
+                              at {selectedEvent.time}
                             </p>
                           </div>
                         </motion.div>
@@ -841,7 +847,9 @@ export function DesktopKanbanCalendar({
                             <p className="text-sm font-medium text-gray-700">
                               Duration
                             </p>
-                            <p className="text-sm text-gray-500">1 hour</p>
+                            <p className="text-sm text-gray-500">
+                              {selectedEvent.duration || "1 hour"}
+                            </p>
                           </div>
                         </motion.div>
                       </div>
