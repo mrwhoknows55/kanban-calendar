@@ -40,7 +40,10 @@ export const ResponsiveKanbanCalendar = memo(function ResponsiveKanbanCalendar({
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [isClient, setIsClient] = useState(false);
   const [events, setEvents] = useState<Record<string, Event[]>>(initialEvents);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    setEvents(initialEvents);
+  }, [initialEvents]);
 
   // Effect to handle responsive layout
   useEffect(() => {
@@ -67,13 +70,8 @@ export const ResponsiveKanbanCalendar = memo(function ResponsiveKanbanCalendar({
     };
   }, []);
 
-  // Handle refresh of events
   const handleRefresh = (freshEvents: Record<string, Event[]>) => {
-    console.log(`isRefreshing: ${isRefreshing}`);
-    setEvents(freshEvents);
-    // Trigger refresh animation
-    setIsRefreshing(true);
-    setTimeout(() => setIsRefreshing(false), 500);
+    setEvents({ ...freshEvents });
   };
 
   // During SSR or before hydration, return a placeholder

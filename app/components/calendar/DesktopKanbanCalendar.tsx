@@ -60,6 +60,22 @@ export function DesktopKanbanCalendar({
   // Use the global drag store
   const { startDrag, endDrag } = useDragStore();
 
+  // Update selected event when events change
+  useEffect(() => {
+    if (selectedEvent) {
+      // Find the updated version of the selected event
+      for (const dateKey in events) {
+        const updatedEvent = events[dateKey]?.find(
+          (e) => e.id === selectedEvent.id,
+        );
+        if (updatedEvent) {
+          setSelectedEvent(updatedEvent);
+          break;
+        }
+      }
+    }
+  }, [events, selectedEvent]);
+
   // Handle week navigation
   const handleWeekChange = (direction: number) => {
     const newWeekStart =

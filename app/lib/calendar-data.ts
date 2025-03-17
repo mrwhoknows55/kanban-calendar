@@ -94,7 +94,7 @@ const events: EventsByDate = {
       description:
         "Meet with Alex to brainstorm ideas for the upcoming product launch. We'll review market research and competitor analysis to identify potential opportunities and challenges.",
       imageUrl:
-        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1920&h=1080&auto=format&fit=crop",
+        "https://fastly.picsum.photos/id/312/1920/1080.jpg?hmac=OD_fP9MUQN7uJ8NBR7tlii78qwHPUROGgohG4w16Kjw",
       time: "09:00 AM",
       duration: "45 minutes",
       fullDate: format(new Date(today), "EEEE, MMMM d, yyyy"),
@@ -105,7 +105,7 @@ const events: EventsByDate = {
       description:
         "Weekly standup meeting with the dev team. Discuss progress, blockers, and align on next week's priorities.",
       imageUrl:
-        "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1920&h=1080&auto=format&fit=crop",
+        "http://fastly.picsum.photos/id/737/1920/1080.jpg?hmac=aFzER8Y4wcWTrXVx2wVKSj10IqnygaF33gESj0WGDwI",
       time: "02:00 PM",
       duration: "30 minutes",
       fullDate: format(new Date(today), "EEEE, MMMM d, yyyy"),
@@ -129,7 +129,7 @@ const events: EventsByDate = {
       description:
         "Join for a relaxing yoga session to reduce stress and improve mindfulness. Suitable for all levels, focusing on gentle stretches.",
       imageUrl:
-        "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?q=80&w=1920&h=1080&auto=format&fit=crop",
+        "https://fastly.picsum.photos/id/392/1920/1080.jpg?hmac=Fvbf7C1Rcozg8EccwYPqsGkk_o6Bld2GQRDPZKWpd7g",
       time: "12:00 PM",
       duration: "1 hour",
       fullDate: format(new Date(tomorrow), "EEEE, MMMM d, yyyy"),
@@ -140,7 +140,7 @@ const events: EventsByDate = {
       description:
         "Demo of UI improvements and performance optimizations to gather stakeholder feedback.",
       imageUrl:
-        "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=1920&h=1080&auto=format&fit=crop",
+        "https://fastly.picsum.photos/id/249/1920/1080.jpg?hmac=cPMNdgGXRh6T_KhRMuaQjRtAx5cWRraELjtL2MHTfYs",
       time: "03:30 PM",
       duration: "1 hour",
       fullDate: format(new Date(tomorrow), "EEEE, MMMM d, yyyy"),
@@ -164,7 +164,7 @@ const events: EventsByDate = {
       description:
         "Review project progress, timeline adjustments, and outline roadmap for next quarter with the client.",
       imageUrl:
-        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1920&h=1080&auto=format&fit=crop",
+        "https://fastly.picsum.photos/id/908/1920/1080.jpg?hmac=MeG_oA1s75hHAL_4JzCioh6--zyFTWSCTxOhe8ugvXo",
       time: "11:30 AM",
       duration: "2 hours",
       fullDate: format(new Date(dayAfterTomorrow), "EEEE, MMMM d, yyyy"),

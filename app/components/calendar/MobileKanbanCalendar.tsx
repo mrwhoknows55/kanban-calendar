@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   format,
   addDays,
@@ -48,6 +48,22 @@ export function MobileKanbanCalendar({
 
   // Use our custom hook for managing events
   const { events } = useCalendarEvents({ initialEvents });
+
+  // Update selected event when events change
+  useEffect(() => {
+    if (selectedEvent) {
+      // Find the updated version of the selected event
+      for (const dateKey in events) {
+        const updatedEvent = events[dateKey]?.find(
+          (e) => e.id === selectedEvent.id,
+        );
+        if (updatedEvent) {
+          setSelectedEvent(updatedEvent);
+          break;
+        }
+      }
+    }
+  }, [events, selectedEvent]);
 
   // Format the current date as a string key for the events object
   const currentDateKey = format(currentDate, "yyyy-MM-dd");

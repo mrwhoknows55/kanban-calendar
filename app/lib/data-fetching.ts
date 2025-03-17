@@ -1,12 +1,12 @@
 import { cache } from "react";
 import { getEventDates, getEventsForDate, type Event } from "./calendar-data";
+import { format } from "date-fns";
 
 /**
  * Cached function to get all events
  * This uses React's cache() to prevent redundant fetches
  */
 export const getEventsWithCache = cache(async () => {
-  // Get all event dates
   const eventDates = await getEventDates();
 
   // Create a record of events by date
@@ -15,7 +15,13 @@ export const getEventsWithCache = cache(async () => {
   // Populate events for each date
   for (const date of eventDates) {
     const formattedDate = date; // Already in yyyy-MM-dd format
-    events[formattedDate] = await getEventsForDate(new Date(formattedDate));
+    const eventsForDate = await getEventsForDate(new Date(formattedDate));
+
+    events[formattedDate] = eventsForDate.map((event) => ({
+      ...event,
+      fullDate:
+        event.fullDate || format(new Date(formattedDate), "EEEE, MMMM d, yyyy"),
+    }));
   }
 
   return events;
@@ -26,7 +32,6 @@ export const getEventsWithCache = cache(async () => {
  * This bypasses the cache to get fresh data
  */
 export async function fetchUpdatedEvents() {
-  // Get all event dates
   const eventDates = await getEventDates();
 
   // Create a record of events by date
@@ -34,8 +39,15 @@ export async function fetchUpdatedEvents() {
 
   // Populate events for each date
   for (const date of eventDates) {
-    const formattedDate = date; // Already in yyyy-MM-dd format
-    events[formattedDate] = await getEventsForDate(new Date(formattedDate));
+    const formattedDate = date;
+    const eventsForDate = await getEventsForDate(new Date(formattedDate));
+
+    // Ensure each event has the fullDate property
+    events[formattedDate] = eventsForDate.map((event) => ({
+      ...event,
+      fullDate:
+        event.fullDate || format(new Date(formattedDate), "EEEE, MMMM d, yyyy"),
+    }));
   }
 
   return events;
@@ -56,7 +68,6 @@ export async function fetchEventsForDateRange(startDate: Date, endDate: Date) {
     end = temp;
   }
 
-  // Get all event dates
   const eventDates = await getEventDates();
 
   // Filter dates within the range
@@ -65,12 +76,17 @@ export async function fetchEventsForDateRange(startDate: Date, endDate: Date) {
     return date >= start && date <= end;
   });
 
-  // Create a record of events by date
   const events: Record<string, Event[]> = {};
 
   // Populate events for each date in the range
   for (const date of filteredDates) {
-    events[date] = await getEventsForDate(new Date(date));
+    const eventsForDate = await getEventsForDate(new Date(date));
+
+    // Ensure each event has the fullDate property
+    events[date] = eventsForDate.map((event) => ({
+      ...event,
+      fullDate: event.fullDate || format(new Date(date), "EEEE, MMMM d, yyyy"),
+    }));
   }
 
   return events;

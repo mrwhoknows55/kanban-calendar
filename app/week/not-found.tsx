@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Button } from "@/app/components/ui/button";
+import { buttonVariants } from "@/app/components/ui/button";
+import { cn } from "@/app/lib/utils";
 
 export default function NotFound() {
   return (
@@ -13,9 +14,15 @@ export default function NotFound() {
           been moved.
         </p>
         <div className="flex justify-end">
-          <Button asChild className="bg-gradient-header hover:opacity-90">
-            <Link href="/calendar">Go to Calendar</Link>
-          </Button>
+          <Link
+            href="/calendar"
+            className={cn(
+              buttonVariants(),
+              "bg-gradient-header hover:opacity-90"
+            )}
+          >
+            Go to Calendar
+          </Link>
         </div>
       </div>
     </div>

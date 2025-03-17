@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { type Event } from "./calendar-data";
+import { format } from "date-fns";
 
 interface UseCalendarEventsProps {
   initialEvents: Record<string, Event[]>;
@@ -14,15 +15,17 @@ interface UseCalendarEventsReturn {
   removeEvent: (eventId: string, date: string) => void;
 }
 
-/**
- * Custom hook for managing calendar events with drag and drop functionality
- */
+//  Custom hook for managing calendar events with drag and drop functionality
 export function useCalendarEvents({
   initialEvents,
 }: UseCalendarEventsProps): UseCalendarEventsReturn {
   const [events, setEvents] = useState<Record<string, Event[]>>(initialEvents);
 
-  // Helper function to convert time string to comparable value
+  // Update events when initialEvents prop changes
+  useEffect(() => {
+    setEvents(initialEvents);
+  }, [initialEvents]);
+
   const getTimeValue = (timeStr: string) => {
     const [time, period] = timeStr.split(" ");
     let [hours, minutes] = time.split(":").map(Number);
@@ -57,8 +60,11 @@ export function useCalendarEvents({
       // If event not found, do nothing
       if (eventIndex === -1) return prevEvents;
 
-      // Get the event
-      const event = sourceEvents[eventIndex];
+      // Get the event and create a deep copy
+      const event = { ...sourceEvents[eventIndex] };
+
+      // Update the event's fullDate property to match the new date
+      event.fullDate = format(new Date(targetDate), "EEEE, MMMM d, yyyy");
 
       // Remove from source
       sourceEvents.splice(eventIndex, 1);
@@ -95,8 +101,15 @@ export function useCalendarEvents({
       const newEvents = { ...prevEvents };
       const dateEvents = [...(newEvents[date] || [])];
 
+      // Create a deep copy of the event and ensure it has the correct fullDate
+      const newEvent = {
+        ...event,
+        fullDate:
+          event.fullDate || format(new Date(date), "EEEE, MMMM d, yyyy"),
+      };
+
       // Find the correct position to insert the event based on time
-      const eventTimeValue = getTimeValue(event.time);
+      const eventTimeValue = getTimeValue(newEvent.time);
       let insertIndex = 0;
 
       for (let i = 0; i < dateEvents.length; i++) {
@@ -108,7 +121,7 @@ export function useCalendarEvents({
       }
 
       // Insert the event at the correct position
-      dateEvents.splice(insertIndex, 0, event);
+      dateEvents.splice(insertIndex, 0, newEvent);
       newEvents[date] = dateEvents;
 
       return newEvents;
