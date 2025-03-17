@@ -41,7 +41,7 @@ export function DesktopKanbanCalendar({
   events: initialEvents,
 }: DesktopKanbanCalendarProps) {
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
-    startOfWeek(initialDate, { weekStartsOn: 1 })
+    startOfWeek(initialDate, { weekStartsOn: 1 }),
   );
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isEventOpen, setIsEventOpen] = useState<boolean>(false);
@@ -90,10 +90,10 @@ export function DesktopKanbanCalendar({
       moveEvent(
         draggedEvent.event.id,
         draggedEvent.sourceDate,
-        activeDragTarget
+        activeDragTarget,
       );
       console.log(
-        `Moved event ${draggedEvent.event.id} from ${draggedEvent.sourceDate} to ${activeDragTarget}`
+        `Moved event ${draggedEvent.event.id} from ${draggedEvent.sourceDate} to ${activeDragTarget}`,
       );
     }
 
@@ -309,7 +309,7 @@ export function DesktopKanbanCalendar({
                   "flex flex-col border-r last:border-r-0 border-gray-100 relative",
                   isToday(date) ? "bg-blue-50/30" : "",
                   isDragging ? "drop-target" : "",
-                  isActiveDropTarget && isDragging ? "drag-over" : ""
+                  isActiveDropTarget && isDragging ? "drag-over" : "",
                 )}
                 onMouseOver={() => handleDragOver(dateKey)}
                 onTouchMove={() => handleDragOver(dateKey)}
@@ -331,7 +331,7 @@ export function DesktopKanbanCalendar({
                       "absolute inset-0 border-2 border-dashed rounded-md m-1 pointer-events-none z-0 transition-all duration-200",
                       isActiveDropTarget
                         ? "bg-blue-100/60 border-blue-400 scale-100"
-                        : "bg-blue-100/10 border-blue-200 scale-95"
+                        : "bg-blue-100/10 border-blue-200 scale-95",
                     )}
                   ></div>
                 )}
@@ -353,7 +353,7 @@ export function DesktopKanbanCalendar({
                   className={cn(
                     "p-3 text-center border-b border-gray-100 sticky top-0 z-10 shadow-sm",
                     isToday(date) ? "bg-blue-100/50" : "bg-gray-50",
-                    isActiveDropTarget && isDragging ? "bg-blue-100" : ""
+                    isActiveDropTarget && isDragging ? "bg-blue-100" : "",
                   )}
                 >
                   <div className="flex flex-col items-center">
@@ -363,7 +363,7 @@ export function DesktopKanbanCalendar({
                     <span
                       className={cn(
                         "text-xl font-bold mt-1",
-                        isToday(date) ? "text-blue-600" : "text-gray-800"
+                        isToday(date) ? "text-blue-600" : "text-gray-800",
                       )}
                     >
                       {format(date, "d")}
@@ -377,7 +377,7 @@ export function DesktopKanbanCalendar({
                     <div
                       className={cn(
                         "text-gray-400 text-sm space-y-4 relative",
-                        isActiveDropTarget && isDragging ? "bg-blue-50/30" : ""
+                        isActiveDropTarget && isDragging ? "bg-blue-50/30" : "",
                       )}
                     >
                       <p className="text-center py-2">No events</p>
@@ -530,7 +530,7 @@ export function DesktopKanbanCalendar({
                                     isDragging &&
                                       draggedEvent?.event.id === event.id
                                       ? "shadow-lg opacity-50 scale-95"
-                                      : "hover:shadow-md shadow-[0_2px_6px_rgba(0,0,0,0.1)]"
+                                      : "hover:shadow-md shadow-[0_2px_6px_rgba(0,0,0,0.1)]",
                                   )}
                                   onClick={() => {
                                     setSelectedEvent(event);
@@ -563,7 +563,7 @@ export function DesktopKanbanCalendar({
                                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                       priority
                                       onError={(
-                                        e: React.SyntheticEvent<HTMLImageElement>
+                                        e: React.SyntheticEvent<HTMLImageElement>,
                                       ) => {
                                         // Fallback image on error
                                         const target =

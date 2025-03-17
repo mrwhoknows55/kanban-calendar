@@ -1,41 +1,25 @@
 import React from "react";
-import { ResponsiveKanbanCalendar } from "@/app/components/calendar/ResponsiveKanbanCalendar";
-import {
-  getEventDates,
-  getEventsForDate,
-  type Event,
-} from "@/app/lib/calendar-data";
+import { CalendarContainer } from "@/app/components/calendar/CalendarContainer";
 import { Metadata } from "next";
+import { getEventsWithCache } from "@/app/lib/data-fetching";
 
 export const metadata: Metadata = {
   title: "Kanban Calendar",
   description: "View and manage your daily schedule",
 };
 
-export const dynamic = "force-dynamic";
-
-async function getEvents() {
-  // Get all event dates
-  const eventDates = await getEventDates();
-
-  // Create a record of events by date
-  const events: Record<string, Event[]> = {};
-
-  // Populate events for each date
-  for (const date of eventDates) {
-    const formattedDate = date; // Already in yyyy-MM-dd format
-    events[formattedDate] = await getEventsForDate(new Date(formattedDate));
-  }
-
-  return events;
-}
+// Change from force-dynamic to auto with revalidation
+// This allows Next.js to cache the page while still keeping it fresh
+export const dynamic = "auto";
+export const revalidate = 60; // Revalidate every minute
 
 export default async function CalendarPage() {
-  const events = await getEvents();
+  // Use the cached version of getEvents from our utility
+  const events = await getEventsWithCache();
 
   return (
     <main className="min-h-screen">
-      <ResponsiveKanbanCalendar initialDate={new Date()} events={events} />
+      <CalendarContainer events={events} />
     </main>
   );
 }

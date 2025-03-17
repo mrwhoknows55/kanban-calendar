@@ -3,7 +3,8 @@ import { twMerge } from "tailwind-merge";
 import { format, startOfWeek, addDays } from "date-fns";
 
 /**
- * Combines class names with Tailwind CSS
+ * Combines multiple class names and merges Tailwind CSS classes
+ * This is useful for conditionally applying classes and merging them with Tailwind
  */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
