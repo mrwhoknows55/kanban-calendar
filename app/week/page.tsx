@@ -8,7 +8,7 @@ import {
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Calendar | Your Schedule",
+  title: "Kanban Calendar",
   description: "View and manage your daily schedule",
 };
 
