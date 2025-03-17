@@ -4,8 +4,9 @@ A simple calendar app built with Next.js that helps you organize events in a kan
 
 Visit [https://calendar.avdt.xyz/](https://calendar.avdt.xyz) to see the live app.
 
+## Screenshots
 <details>
-<summary><b>📸 Screenshots</b></summary>
+<summary>Toggle to view</summary>
 
 | Mobile | Desktop |
 |--------|---------|
