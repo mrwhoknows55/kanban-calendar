@@ -1,82 +1,68 @@
-# Calendar Mobile View
+# Kanban Calendar App
 
-A mobile-friendly calendar application built with Next.js, TypeScript, Tailwind CSS, and Zustand.
+A simple calendar app built with Next.js that helps you organize events in a kanban style.
+
+Visit [https://calendar.avdt.xyz/](https://calendar.avdt.xyz) to see the live app.
 
 ## Features
 
-- Week view calendar strip for easy date navigation
-- Daily schedule view showing events for the selected day
-- Event cards with detailed information
-- "Zoom to open" transition for event details
-- Responsive design optimized for mobile devices
+- Responsive design for mobile and desktop
+- Weekly calendar navigation
+- Drag and drop cross-day event movement
+- Smooth animations and transitions
+- Real-time event updates
+- Optimized performance
+- Mock data integration (temporary)
 
-## Components
+## Tech Stack
 
-### UI Components
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 4
+- **State Management**: Zustand
+- **UI Components**: Radix UI
+- **Date Handling**: date-fns
 
-- **Button**: Reusable button component with various styles and sizes
-- **Card**: Card component for displaying content in a contained format
-- **Dialog**: Modal dialog for displaying detailed event information
+## Project Structure
 
-### Calendar Components
-
-- **Calendar**: Main component that combines WeekView and DailySchedule
-- **WeekView**: Displays a week strip for date selection
-- **DailySchedule**: Shows events for the selected day
-- **EventCard**: Card component for individual events with zoom-to-open functionality
-
-## State Management
-
-The application uses Zustand for state management, with the following features:
-
-- Store selected date
-- Manage calendar events
-- Filter events by date
+```
+app/
+├── components/
+│   ├── calendar/     # Calendar-specific components
+│   └── ui/           # Reusable UI components
+├── lib/              # Utility functions and hooks
+└── week/             # Week view pages
+```
 
 ## Getting Started
 
-1. Install dependencies:
+```bash
+# Install dependencies
+pnpm install
+```
 
-   ```bash
-   pnpm install
-   ```
+````bash
+# Run development server
+pnpm dev
 
-2. Run the development server:
+# Start production server
+pnpm start
+```
 
-   ```bash
-   pnpm dev
-   ```
+```bash
+# Build for production
+pnpm build
+````
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+## Future Scope and Possible Features
+- Database integration (PostgreSQL/MongoDB)
+- Authentication and user profiles
+- Dark/light theme support
+- Additional calendar views (month, year)
+- Recurring events and event categorization
+- Performance and touch gesture enhancements
+- Offline capability with PWA features
+- Push notifications for reminders
+- Real-time collaborative editing via WebSockets
+- Import/export functionality
 
-## Image Placeholders
-
-The application uses placeholder images for events. Replace the following files with actual images:
-
-- `/public/images/coffee.jpg`
-- `/public/images/buildings.jpg`
-- `/public/images/bridge.jpg`
-
-## Technologies Used
-
-- Next.js 15
-- TypeScript
-- Tailwind CSS 4
-- Zustand for state management
-- Radix UI for accessible components
-- date-fns for date manipulation
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
