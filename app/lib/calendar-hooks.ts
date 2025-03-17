@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { type Event } from "./calendar-data";
 import { format } from "date-fns";
+import { getTimeValue } from "./utils";
 
 interface UseCalendarEventsProps {
   initialEvents: Record<string, Event[]>;
@@ -25,18 +26,6 @@ export function useCalendarEvents({
   useEffect(() => {
     setEvents(initialEvents);
   }, [initialEvents]);
-
-  const getTimeValue = (timeStr: string) => {
-    const [time, period] = timeStr.split(" ");
-    let [hours, minutes] = time.split(":").map(Number);
-
-    if (period === "PM" && hours < 12) hours += 12;
-    if (period === "AM" && hours === 12) hours = 0;
-
-    minutes = minutes + 0;
-
-    return hours * 60 + minutes;
-  };
 
   /**
    * Move an event from one date to another

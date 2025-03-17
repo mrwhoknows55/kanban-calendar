@@ -7,24 +7,7 @@ import { format } from "date-fns";
  * This uses React's cache() to prevent redundant fetches
  */
 export const getEventsWithCache = cache(async () => {
-  const eventDates = await getEventDates();
-
-  // Create a record of events by date
-  const events: Record<string, Event[]> = {};
-
-  // Populate events for each date
-  for (const date of eventDates) {
-    const formattedDate = date; // Already in yyyy-MM-dd format
-    const eventsForDate = await getEventsForDate(new Date(formattedDate));
-
-    events[formattedDate] = eventsForDate.map((event) => ({
-      ...event,
-      fullDate:
-        event.fullDate || format(new Date(formattedDate), "EEEE, MMMM d, yyyy"),
-    }));
-  }
-
-  return events;
+  return await fetchUpdatedEvents();
 });
 
 /**

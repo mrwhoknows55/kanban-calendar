@@ -187,12 +187,6 @@ export async function getEventsForDate(date: Date): Promise<Event[]> {
   const dateKey = format(date, "yyyy-MM-dd");
   return events[dateKey] || [];
 }
-
-export async function hasEventsForDate(date: Date): Promise<boolean> {
-  const dateKey = format(date, "yyyy-MM-dd");
-  return !!events[dateKey] && events[dateKey].length > 0;
-}
-
 export async function getEventDates(): Promise<string[]> {
   return Object.keys(events);
 }
