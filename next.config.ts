@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "fastly.picsum.photos",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
     ],
   },
   experimental: {
