@@ -19,17 +19,7 @@ import { Card } from "@/app/components/ui/card";
 import Image from "next/image";
 import { Root as VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { TimePill } from "@/app/components/calendar/TimePill";
-
-// Helper function to convert time string to comparable value
-const getTimeValue = (timeStr: string) => {
-  const [time, period] = timeStr.split(" ");
-  let [hours, minutes] = time.split(":").map(Number);
-
-  if (period === "PM" && hours < 12) hours += 12;
-  if (period === "AM" && hours === 12) hours = 0;
-  minutes = minutes + 0;
-  return hours * 60 + minutes;
-};
+import { getTimeValue } from "@/app/lib/utils";
 
 interface DesktopKanbanCalendarProps {
   initialDate: Date;

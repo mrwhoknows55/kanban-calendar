@@ -57,7 +57,7 @@ const events: EventsByDate = {
       description:
         "Initial meeting to discuss project scope, timeline, and team responsibilities. Set up communication channels and project management tools.",
       imageUrl:
-        "https://fastly.picsum.photos/id/433/1920/1080.jpg?hmac=_4-vRvvQSPtpfXL-XRDgPVTrSsQJWJZhWbBkl_Qk67k",
+        "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "10:00 AM",
       duration: "2 hours",
       fullDate: format(new Date(twoDaysAgo), "EEEE, MMMM d, yyyy"),
@@ -70,7 +70,7 @@ const events: EventsByDate = {
       description:
         "Review UI mockups and design system with the design team. Discuss implementation approach and potential challenges.",
       imageUrl:
-        "https://fastly.picsum.photos/id/96/1920/1080.jpg?hmac=kKFGWKDL7yQZpfQJkLXQRvWtQHmXLmE6RyqxXYEgXTU",
+        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "02:30 PM",
       duration: "1.5 hours",
       fullDate: format(new Date(yesterday), "EEEE, MMMM d, yyyy"),
@@ -81,7 +81,7 @@ const events: EventsByDate = {
       description:
         "Casual team lunch to celebrate recent project milestones and build team rapport.",
       imageUrl:
-        "https://fastly.picsum.photos/id/292/1920/1080.jpg?hmac=HYdJVbXwxIbT-Qs_Ib9s9GbM9haT3RzHhgI4hj2Vsj0",
+        "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1920&h=1080&auto=format&fit=crop",
       time: "12:00 PM",
       duration: "1 hour",
       fullDate: format(new Date(yesterday), "EEEE, MMMM d, yyyy"),
@@ -105,7 +105,7 @@ const events: EventsByDate = {
       description:
         "Weekly standup meeting with the dev team. Discuss progress, blockers, and align on next week's priorities.",
       imageUrl:
-        "http://fastly.picsum.photos/id/737/1920/1080.jpg?hmac=aFzER8Y4wcWTrXVx2wVKSj10IqnygaF33gESj0WGDwI",
+        "https://fastly.picsum.photos/id/737/1920/1080.jpg?hmac=aFzER8Y4wcWTrXVx2wVKSj10IqnygaF33gESj0WGDwI",
       time: "02:00 PM",
       duration: "30 minutes",
       fullDate: format(new Date(today), "EEEE, MMMM d, yyyy"),
@@ -187,12 +187,6 @@ export async function getEventsForDate(date: Date): Promise<Event[]> {
   const dateKey = format(date, "yyyy-MM-dd");
   return events[dateKey] || [];
 }
-
-export async function hasEventsForDate(date: Date): Promise<boolean> {
-  const dateKey = format(date, "yyyy-MM-dd");
-  return !!events[dateKey] && events[dateKey].length > 0;
-}
-
 export async function getEventDates(): Promise<string[]> {
   return Object.keys(events);
 }

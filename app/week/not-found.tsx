@@ -18,7 +18,7 @@ export default function NotFound() {
             href="/calendar"
             className={cn(
               buttonVariants(),
-              "bg-gradient-header hover:opacity-90"
+              "bg-gradient-header hover:opacity-90",
             )}
           >
             Go to Calendar

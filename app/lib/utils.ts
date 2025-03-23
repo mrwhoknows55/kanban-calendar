@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { format, startOfWeek, addDays } from "date-fns";
+import { format } from "date-fns";
 
 /**
  * Combines multiple class names and merges Tailwind CSS classes
@@ -10,43 +10,19 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-/**
- * Get an array of dates for the week containing the provided date
- */
-export function getWeekDays(
-  date: Date,
-  weekStartsOn: 0 | 1 | 2 | 3 | 4 | 5 | 6 = 1,
-) {
-  const start = startOfWeek(date, { weekStartsOn });
-
-  return Array(7)
-    .fill(0)
-    .map((_, i) => {
-      return addDays(start, i);
-    });
-}
-
-/**
- * Format a date for display
- */
+//  Format a date for display
 export function formatDate(date: Date, formatString: string): string {
   return format(date, formatString);
 }
 
-/**
- * Check if two dates are the same day
- */
-export function isSameDay(date1: Date, date2: Date): boolean {
-  return (
-    date1.getDate() === date2.getDate() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getFullYear() === date2.getFullYear()
-  );
-}
+// Helper function to convert time string to comparable value
+export const getTimeValue = (timeStr: string) => {
+  const [time, period] = timeStr.split(" ");
+  const [hour, minutes] = time.split(":").map(Number);
+  let hours = hour;
 
-/**
- * Sort events by time
- */
-export function sortEventsByTime(events: Array<{ time: string }>) {
-  return [...events].sort((a, b) => a.time.localeCompare(b.time));
-}
+  if (period === "PM" && hours < 12) hours += 12;
+  if (period === "AM" && hours === 12) hours = 0;
+
+  return hours * 60 + minutes;
+};
