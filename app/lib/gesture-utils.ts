@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { create } from "zustand";
+import { type Event } from "./calendar-data";
 
 interface SwipeHandlers {
   onSwipeLeft?: () => void;
@@ -15,12 +16,16 @@ interface UseSwipeOptions {
   preventDefault?: boolean;
 }
 
+interface DraggedEvent {
+  event: Event;
+  sourceDate: string;
+}
+
 interface DragState {
   isDragging: boolean;
-  dragCompleteTimestamp: number | null;
-  startDrag: () => void;
-  endDrag: () => void;
-  canOpenCard: () => boolean;
+  draggedEvent: DraggedEvent | null;
+  setIsDragging: (isDragging: boolean) => void;
+  setDraggedEvent: (draggedEvent: DraggedEvent | null) => void;
 }
 
 /**
@@ -94,31 +99,9 @@ export function useSwipe(
 }
 
 // Create a global store to track drag state across components
-export const useDragStore = create<DragState>((set, get) => ({
+export const useDragStore = create<DragState>((set) => ({
   isDragging: false,
-  dragCompleteTimestamp: null,
-
-  startDrag: () => {
-    set({ isDragging: true });
-  },
-
-  endDrag: () => {
-    set({
-      isDragging: false,
-      dragCompleteTimestamp: Date.now(),
-    });
-  },
-
-  // Only allow card opening if no drag is in progress and
-  // at least 500ms have passed since the last drag completed
-  canOpenCard: () => {
-    const { isDragging, dragCompleteTimestamp } = get();
-
-    if (isDragging) return false;
-
-    if (dragCompleteTimestamp === null) return true;
-
-    const timeSinceDragComplete = Date.now() - dragCompleteTimestamp;
-    return timeSinceDragComplete > 500;
-  },
+  draggedEvent: null,
+  setIsDragging: (isDragging) => set({ isDragging }),
+  setDraggedEvent: (draggedEvent) => set({ draggedEvent }),
 }));
