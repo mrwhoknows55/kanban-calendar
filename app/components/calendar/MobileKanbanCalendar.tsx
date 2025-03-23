@@ -134,7 +134,7 @@ export function MobileKanbanCalendar({
   return (
     <div className="flex flex-col w-full h-screen overflow-hidden">
       {/* Week header */}
-      <div className="bg-gradient-header text-white p-6">
+      <div className="bg-gradient-header text-white p-6 sticky top-0 z-50 backdrop-blur-sm bg-opacity-90 shadow-md">
         <h1 className="text-2xl font-bold mb-4 tracking-tight">
           Your Schedule
         </h1>
