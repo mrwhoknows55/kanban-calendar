@@ -5,12 +5,13 @@ A simple calendar app built with Next.js that helps you organize events in a kan
 Visit [https://calendar.avdt.xyz/](https://calendar.avdt.xyz) to see the live app.
 
 ## Screenshots
+
 <details>
 <summary>Toggle to view</summary>
 
-| Mobile | Desktop |
-|--------|---------|
-| ![Mobile Main View](/docs/screenshots/mobile-main.png) | ![Desktop Main View](/docs/screenshots/desktop-main.png) |
+| Mobile                                                       | Desktop                                                        |
+| ------------------------------------------------------------ | -------------------------------------------------------------- |
+| ![Mobile Main View](/docs/screenshots/mobile-main.png)       | ![Desktop Main View](/docs/screenshots/desktop-main.png)       |
 | ![Mobile Details View](/docs/screenshots/mobile-details.png) | ![Desktop Details View](/docs/screenshots/desktop-details.png) |
 
 </details>
@@ -66,6 +67,7 @@ pnpm build
 ```
 
 ## Future Scope and Possible Features
+
 - Database integration (PostgreSQL/MongoDB)
 - Authentication and user profiles
 - Dark/light theme support
@@ -76,4 +78,3 @@ pnpm build
 - Push notifications for reminders
 - Real-time collaborative editing via WebSockets
 - Import/export functionality
-

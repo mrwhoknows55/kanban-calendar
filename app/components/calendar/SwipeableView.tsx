@@ -37,7 +37,7 @@ export function SwipeableView({
 
     const handleTouchEnd = () => {
       if (disabled) return;
-      
+
       const swipeDistance = touchEndX.current - touchStartX.current;
       const absDistance = Math.abs(swipeDistance);
 
@@ -70,4 +70,4 @@ export function SwipeableView({
       {children}
     </div>
   );
-} 
+}

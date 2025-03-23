@@ -15,7 +15,7 @@ export const getEventsWithCache = cache(async () => {
     throw new CalendarError(
       "Failed to fetch calendar events",
       CalendarErrorCodes.FETCH_FAILED,
-      500
+      500,
     );
   }
 });
@@ -41,7 +41,8 @@ export async function fetchUpdatedEvents() {
         events[formattedDate] = eventsForDate.map((event) => ({
           ...event,
           fullDate:
-            event.fullDate || format(new Date(formattedDate), "EEEE, MMMM d, yyyy"),
+            event.fullDate ||
+            format(new Date(formattedDate), "EEEE, MMMM d, yyyy"),
         }));
       } catch (error) {
         console.error(`Failed to fetch events for date ${date}:`, error);
@@ -54,7 +55,7 @@ export async function fetchUpdatedEvents() {
       throw new CalendarError(
         "No events could be fetched",
         CalendarErrorCodes.FETCH_FAILED,
-        404
+        404,
       );
     }
 
@@ -67,7 +68,7 @@ export async function fetchUpdatedEvents() {
     throw new CalendarError(
       "Failed to fetch calendar events",
       CalendarErrorCodes.FETCH_FAILED,
-      500
+      500,
     );
   }
 }
@@ -86,7 +87,7 @@ export async function fetchEventsForDateRange(startDate: Date, endDate: Date) {
       throw new CalendarError(
         "Invalid date range provided",
         CalendarErrorCodes.INVALID_DATE,
-        400
+        400,
       );
     }
 
@@ -115,7 +116,8 @@ export async function fetchEventsForDateRange(startDate: Date, endDate: Date) {
         // Ensure each event has the fullDate property
         events[date] = eventsForDate.map((event) => ({
           ...event,
-          fullDate: event.fullDate || format(new Date(date), "EEEE, MMMM d, yyyy"),
+          fullDate:
+            event.fullDate || format(new Date(date), "EEEE, MMMM d, yyyy"),
         }));
       } catch (error) {
         console.error(`Failed to fetch events for date ${date}:`, error);
@@ -133,7 +135,7 @@ export async function fetchEventsForDateRange(startDate: Date, endDate: Date) {
     throw new CalendarError(
       "Failed to fetch events for date range",
       CalendarErrorCodes.FETCH_FAILED,
-      500
+      500,
     );
   }
 }

@@ -1,8 +1,8 @@
 "use client";
 
-import React from 'react';
-import { AlertCircle } from 'lucide-react';
-import { CalendarError } from '@/app/lib/errors';
+import React from "react";
+import { AlertCircle } from "lucide-react";
+import { CalendarError } from "@/app/lib/errors";
 
 interface Props {
   children: React.ReactNode;
@@ -25,7 +25,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Calendar error boundary caught an error:', error, errorInfo);
+    console.error("Calendar error boundary caught an error:", error, errorInfo);
   }
 
   render() {
@@ -36,7 +36,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
       const error = this.state.error;
       const isCalendarError = error instanceof CalendarError;
-      const message = isCalendarError ? error.message : 'Something went wrong';
+      const message = isCalendarError ? error.message : "Something went wrong";
 
       return (
         <div className="flex min-h-[200px] w-full items-center justify-center rounded-lg border border-gray-200 bg-white p-4">
@@ -44,9 +44,12 @@ export class ErrorBoundary extends React.Component<Props, State> {
             <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
               <AlertCircle className="h-6 w-6 text-red-600" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-gray-900">{message}</h3>
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">
+              {message}
+            </h3>
             <p className="text-sm text-gray-500">
-              Please try refreshing the page or contact support if the problem persists.
+              Please try refreshing the page or contact support if the problem
+              persists.
             </p>
             <button
               onClick={() => window.location.reload()}
@@ -61,4 +64,4 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
     return this.props.children;
   }
-} 
+}

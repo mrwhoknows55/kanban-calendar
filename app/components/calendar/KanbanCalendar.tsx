@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import {
-  format,
-  addDays,
-  subDays,
-  startOfWeek,
-  isToday,
-} from "date-fns";
+import { format, addDays, subDays, startOfWeek, isToday } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { type Event, getRelativeDate } from "@/app/lib/calendar-data";
 import { cn, formatDate } from "@/app/lib/utils";
@@ -22,19 +16,13 @@ import {
   DialogDescription,
   DialogClose,
 } from "@/app/components/ui/dialog";
-import {
-  Calendar,
-  Clock,
-  ChevronLeft,
-  ChevronRight,
-  MoveHorizontal,
-  X,
-} from "lucide-react";
+import { Calendar, Clock, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Root as VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import Image from "next/image";
 import { SwipeableView } from "./SwipeableView";
 
-const fallbackImageUrl = "https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=1920&h=1080&auto=format&fit=crop";
+const fallbackImageUrl =
+  "https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=1920&h=1080&auto=format&fit=crop";
 
 interface KanbanCalendarProps {
   initialDate: Date;
@@ -47,7 +35,7 @@ export function KanbanCalendar({
 }: KanbanCalendarProps) {
   const [currentDate, setCurrentDate] = useState<Date>(initialDate);
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(
-    startOfWeek(currentDate, { weekStartsOn: 1 })
+    startOfWeek(currentDate, { weekStartsOn: 1 }),
   );
   const [direction, setDirection] = useState<number>(0);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -55,7 +43,8 @@ export function KanbanCalendar({
   const columnRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // Drag and drop state from the store
-  const { isDragging, draggedEvent, setIsDragging, setDraggedEvent } = useDragStore();
+  const { isDragging, draggedEvent, setIsDragging, setDraggedEvent } =
+    useDragStore();
   const [activeDragTarget, setActiveDragTarget] = useState<string | null>(null);
 
   // Use our custom hook for managing events
@@ -66,12 +55,14 @@ export function KanbanCalendar({
 
   // Handle week navigation
   const handleWeekChange = (direction: number) => {
-    const newWeekStart = direction > 0
-      ? subDays(currentWeekStart, 7)
-      : addDays(currentWeekStart, 7);
+    const newWeekStart =
+      direction > 0
+        ? subDays(currentWeekStart, 7)
+        : addDays(currentWeekStart, 7);
 
     setCurrentWeekStart(newWeekStart);
-    const dayOfWeek = (currentDate.getDay() === 0 ? 7 : currentDate.getDay()) - 1;
+    const dayOfWeek =
+      (currentDate.getDay() === 0 ? 7 : currentDate.getDay()) - 1;
     const newDate = addDays(newWeekStart, dayOfWeek);
     setCurrentDate(newDate);
     setDirection(direction);
@@ -94,7 +85,7 @@ export function KanbanCalendar({
 
   // Generate dates for the week view
   const weekDates = Array.from({ length: 7 }, (_, i) =>
-    addDays(currentWeekStart, i)
+    addDays(currentWeekStart, i),
   );
 
   // Handle drag and drop
@@ -111,7 +102,11 @@ export function KanbanCalendar({
 
   const handleDragEnd = () => {
     if (draggedEvent && activeDragTarget) {
-      moveEvent(draggedEvent.event.id, draggedEvent.sourceDate, activeDragTarget);
+      moveEvent(
+        draggedEvent.event.id,
+        draggedEvent.sourceDate,
+        activeDragTarget,
+      );
     }
     setIsDragging(false);
     setDraggedEvent(null);
@@ -167,8 +162,8 @@ export function KanbanCalendar({
         <div className="hidden md:block px-0">
           <div className="grid-cols-days">
             {weekDates.map((date) => (
-              <div 
-                key={format(date, "yyyy-MM-dd")} 
+              <div
+                key={format(date, "yyyy-MM-dd")}
                 className="text-center px-2 pb-3"
               >
                 <motion.button
@@ -177,9 +172,10 @@ export function KanbanCalendar({
                     format(date, "yyyy-MM-dd") === currentDateKey
                       ? "bg-gradient-active text-white"
                       : "bg-white/5 text-white",
-                    isToday(date) && format(date, "yyyy-MM-dd") !== currentDateKey
+                    isToday(date) &&
+                      format(date, "yyyy-MM-dd") !== currentDateKey
                       ? "ring-1 ring-white/30"
-                      : ""
+                      : "",
                   )}
                   onClick={() => {
                     const newDirection = date > currentDate ? -1 : 1;
@@ -214,7 +210,7 @@ export function KanbanCalendar({
                   : "bg-white/5 text-white",
                 isToday(date) && format(date, "yyyy-MM-dd") !== currentDateKey
                   ? "ring-1 ring-white/30"
-                  : ""
+                  : "",
               )}
               onClick={() => {
                 const newDirection = date > currentDate ? -1 : 1;
@@ -290,13 +286,13 @@ export function KanbanCalendar({
                         <motion.div
                           key={event.id}
                           initial={{ opacity: 0 }}
-                          animate={{ 
+                          animate={{
                             opacity: 1,
                             transition: {
                               delay: index * 0.05,
                               duration: 0.3,
-                              ease: "easeOut"
-                            }
+                              ease: "easeOut",
+                            },
                           }}
                         >
                           <EventCard
@@ -322,7 +318,6 @@ export function KanbanCalendar({
               const dateKey = format(date, "yyyy-MM-dd");
               const dayEvents = events[dateKey] || [];
               const isActiveDropTarget = activeDragTarget === dateKey;
-              const isSourceColumn = draggedEvent?.sourceDate === dateKey;
 
               return (
                 <div
@@ -335,7 +330,9 @@ export function KanbanCalendar({
                     isToday(date) ? "bg-blue-50/30" : "",
                     isDragging ? "drop-target" : "",
                     isActiveDropTarget && isDragging ? "bg-blue-50" : "",
-                    format(date, "yyyy-MM-dd") === currentDateKey ? "bg-blue-50/50" : ""
+                    format(date, "yyyy-MM-dd") === currentDateKey
+                      ? "bg-blue-50/50"
+                      : "",
                   )}
                   onDragOver={(e) => {
                     e.preventDefault();
@@ -351,13 +348,13 @@ export function KanbanCalendar({
                       <motion.div
                         key={event.id}
                         initial={{ opacity: 0 }}
-                        animate={{ 
+                        animate={{
                           opacity: 1,
                           transition: {
                             delay: index * 0.05,
                             duration: 0.3,
-                            ease: "easeOut"
-                          }
+                            ease: "easeOut",
+                          },
                         }}
                       >
                         <EventCard
@@ -412,10 +409,10 @@ function EventCard({
         onClick={onClick}
         className={cn(
           "cursor-pointer hover:shadow-md transition-all overflow-hidden rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.1)]",
-          draggable && "hover:scale-105"
+          draggable && "hover:scale-105",
         )}
       >
-        <motion.div 
+        <motion.div
           className="relative w-full h-[160px] overflow-hidden rounded-t-xl"
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.3 }}
@@ -480,11 +477,13 @@ function EventDialog({
               <DialogDescription>{event.description}</DialogDescription>
             </VisuallyHidden>
 
-            <motion.div className={cn(
-              "relative w-full overflow-hidden",
-              "h-[40vh]", // Mobile height
-              "md:h-[50vh]" // Desktop height
-            )}>
+            <motion.div
+              className={cn(
+                "relative w-full overflow-hidden",
+                "h-[40vh]", // Mobile height
+                "md:h-[50vh]", // Desktop height
+              )}
+            >
               <Image
                 src={event.imageUrl}
                 alt={event.title}
@@ -495,7 +494,9 @@ function EventDialog({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />
               <div className="absolute bottom-0 left-0 p-8 text-white w-full">
-                <h2 className="text-2xl md:text-4xl font-bold mb-2">{event.title}</h2>
+                <h2 className="text-2xl md:text-4xl font-bold mb-2">
+                  {event.title}
+                </h2>
                 <div className="flex items-center">
                   <Calendar className="w-4 h-4 md:w-5 md:h-5 mr-2 opacity-80" />
                   <span className="text-sm md:text-base text-white/90">
@@ -513,9 +514,12 @@ function EventDialog({
                   <div className="flex items-start">
                     <Calendar className="w-5 h-5 md:w-6 md:h-6 text-[#6c63ff] mr-4 mt-0.5" />
                     <div>
-                      <p className="text-sm md:text-base font-medium text-gray-700">Date & Time</p>
+                      <p className="text-sm md:text-base font-medium text-gray-700">
+                        Date & Time
+                      </p>
                       <p className="text-sm md:text-base text-gray-500">
-                        {event.fullDate || format(new Date(), "EEEE, MMMM d, yyyy")}{" "}
+                        {event.fullDate ||
+                          format(new Date(), "EEEE, MMMM d, yyyy")}{" "}
                         at {event.time}
                       </p>
                     </div>
@@ -524,7 +528,9 @@ function EventDialog({
                   <div className="flex items-start">
                     <Clock className="w-5 h-5 md:w-6 md:h-6 text-[#6c63ff] mr-4 mt-0.5" />
                     <div>
-                      <p className="text-sm md:text-base font-medium text-gray-700">Duration</p>
+                      <p className="text-sm md:text-base font-medium text-gray-700">
+                        Duration
+                      </p>
                       <p className="text-sm md:text-base text-gray-500">
                         {event.duration || "1 hour"}
                       </p>
@@ -543,4 +549,4 @@ function EventDialog({
       </DialogContent>
     </Dialog>
   );
-} 
+}

@@ -32,7 +32,9 @@ export function useCalendarEvents({
       setError(null);
     } catch (err) {
       console.error("Error updating events:", err);
-      setError(err instanceof Error ? err : new Error("Failed to update events"));
+      setError(
+        err instanceof Error ? err : new Error("Failed to update events"),
+      );
     }
   }, [initialEvents]);
 
@@ -61,7 +63,7 @@ export function useCalendarEvents({
           throw new CalendarError(
             "Event not found",
             CalendarErrorCodes.EVENT_NOT_FOUND,
-            404
+            404,
           );
         }
 
@@ -99,9 +101,7 @@ export function useCalendarEvents({
       });
     } catch (err) {
       console.error("Error moving event:", err);
-      setError(
-        err instanceof Error ? err : new Error("Failed to move event")
-      );
+      setError(err instanceof Error ? err : new Error("Failed to move event"));
     }
   };
 
@@ -142,9 +142,7 @@ export function useCalendarEvents({
       });
     } catch (err) {
       console.error("Error adding event:", err);
-      setError(
-        err instanceof Error ? err : new Error("Failed to add event")
-      );
+      setError(err instanceof Error ? err : new Error("Failed to add event"));
     }
   };
 
@@ -162,7 +160,7 @@ export function useCalendarEvents({
           throw new CalendarError(
             "Event not found",
             CalendarErrorCodes.EVENT_NOT_FOUND,
-            404
+            404,
           );
         }
 
@@ -175,7 +173,7 @@ export function useCalendarEvents({
     } catch (err) {
       console.error("Error removing event:", err);
       setError(
-        err instanceof Error ? err : new Error("Failed to remove event")
+        err instanceof Error ? err : new Error("Failed to remove event"),
       );
     }
   };
